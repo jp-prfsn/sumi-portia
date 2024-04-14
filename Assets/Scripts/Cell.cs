@@ -17,7 +17,6 @@ public class Cell : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log("cell clicked");
         Summoner.magic.SelectCell(this);
     }
 
@@ -26,8 +25,5 @@ public class Cell : MonoBehaviour
     }
 
 
-    private void OnDrawGizmos()
-    {
-        //Handles.Label(transform.position, coOrdXY.ToString());
-    }
+    
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using TMPro;
 
 
 public class Block : MonoBehaviour
@@ -17,7 +18,7 @@ public class Block : MonoBehaviour
 
     public int BreakCount = 0;
     public int BreakingPoint = 6;
-    public bool isBlock = true;
+    public bool isInterior = false;
 
     public bool aflame;
 
@@ -52,13 +53,24 @@ public class Block : MonoBehaviour
     public Sprite s_1101;
     public Sprite s_1011;
     public Sprite s_0111;
+    public Sprite s_inside;
 
     public SpriteRenderer sr;
 
+    public GameObject citizen;
+
+    public TextMeshProUGUI remainingKnocks;
+
+
+    public AudioSource aSource;
+    public AudioClip dropSound;
+
     public void SetFire(){
-        aflame = true;
-        flame.SetActive(true);
-        GameManager.gm.emberedBlocks.Add(this);
+        if(!aflame){
+            aflame = true;
+            flame.SetActive(true);
+            GameManager.gm.emberedBlocks.Add(this);
+        }
     }
 
     
@@ -68,14 +80,24 @@ public class Block : MonoBehaviour
     {
         blockColor = Color.white;
         sr.color = blockColor;
+        remainingKnocks.text = (BreakingPoint - BreakCount).ToString();
     }
+
+
 
 
 
     void OnMouseDown()
     {
         if(Summoner.magic.blockSelected){
+
+            if(this.aflame){
+                Summoner.magic.heldBlock.SetFire();
+            }
+
             Summoner.magic.SelectCell(this.hostCell);
+
+            
             
         }else{
             Summoner.magic.SelectBlock(this);
@@ -84,70 +106,42 @@ public class Block : MonoBehaviour
     }
 
     public Block GetRandomNeighborBlock(){
-        List<Block> neighbours = new List<Block>();
-        Cell above  = (coOrdXY.y < GridGenerator.gridder.rows)?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y+1]:null;
-        Cell below  = (coOrdXY.y > 0)?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1]:null;
-        Cell west  = (coOrdXY.x > 0)?GridGenerator.gridder.gridCells[coOrdXY.x-1, coOrdXY.y]:null;
-        Cell east  = (coOrdXY.x < GridGenerator.gridder.cols)?GridGenerator.gridder.gridCells[coOrdXY.x+1, coOrdXY.y]:null;
 
-        if(above){
-            if(above.containedBlock){
-                neighbours.Add(above.containedBlock);
+        List<Block> neighbours = new List<Block>();
+        
+        if(IsCellAbovePossible()){
+            if(CellAbove().containedBlock){
+                neighbours.Add(CellAbove().containedBlock);
             }
         }
-        if(below){
-            if(below.containedBlock){
-                neighbours.Add(below.containedBlock);
+        if(IsCellBelowPossible()){
+            if(CellBelow().containedBlock){
+                neighbours.Add(CellBelow().containedBlock);
             }
         }
-        if(west){
-            if(west.containedBlock){
-                neighbours.Add(west.containedBlock);
+        if(IsCellWestPossible()){
+            if(CellWest().containedBlock){
+                neighbours.Add(CellWest().containedBlock);
             }
         }
-        if(east){
-            if(east.containedBlock){
-                neighbours.Add(east.containedBlock);
+        if(IsCellEastPossible()){
+            if(CellEast().containedBlock){
+                neighbours.Add(CellEast().containedBlock);
             }
         }
+        Debug.Log(neighbours.Count);
         return neighbours[Random.Range(0, neighbours.Count)];
     }
 
-  
-
-    public bool CellBelowIsEmpty(){
-        if(coOrdXY.y > 0){
-
-            Cell underCell = GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1];
-            if(underCell.containedBlock){
-                return false;
-            }
-            
-        }
-        return true;
-    }
-    public Block BlockAbove(){
-        if(coOrdXY.y < GridGenerator.gridder.rows-1){
-            Cell overCell = GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y+1];
-            if(overCell.containedBlock){
-                return overCell.containedBlock;
-            }
-        }
-        return null;
-    }
-
-    public Cell GetLowCell(){
+    public Cell GetLowestCellBelow(){
 
         Cell returnCell = null;
         
         for(int row = coOrdXY.y; row >= 1; row--){
 
-            Debug.Log("Checking Row " + coOrdXY.y);
-
             Cell cellBelow = GridGenerator.gridder.gridCells[coOrdXY.x, row-1];
 
             if(cellBelow.containedBlock){
-                Debug.Log("Blocked!");
                 return GridGenerator.gridder.gridCells[coOrdXY.x, row];
             }
         }
@@ -159,28 +153,82 @@ public class Block : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(transform.position, new Vector3(1, 1, 0.1f));
-        Handles.Label(transform.position, BreakCount.ToString());
+        //Handles.Label(transform.position, BreakCount.ToString());
+        Handles.Label(transform.position, coOrdXY.ToString());
+    }
+
+    public bool IsCellAbovePossible(){
+        return coOrdXY.y < GridGenerator.gridder.rows-1;
+    }
+    public bool IsCellBelowPossible(){
+        return coOrdXY.y > 0;
+    }
+    public bool IsCellEastPossible(){
+        return coOrdXY.x < GridGenerator.gridder.cols-1;
+    }
+    public bool IsCellWestPossible(){
+        return coOrdXY.x > 0;
+    }
+
+    public Cell CellAbove(){
+        if(IsCellAbovePossible()){
+            return GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y + 1];
+        }else{
+            return null;
+        }
+    }
+    public Cell CellBelow(){
+        if(IsCellBelowPossible()){
+            return GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y - 1];
+        }else{
+            return null;
+        }
+    }
+    public Cell CellEast(){
+        if(IsCellEastPossible()){
+            return GridGenerator.gridder.gridCells[coOrdXY.x + 1, coOrdXY.y];
+        }else{
+            return null;
+        }
+    }
+    public Cell CellWest(){
+        if(IsCellWestPossible()){
+            return GridGenerator.gridder.gridCells[coOrdXY.x - 1, coOrdXY.y];
+        }else{
+            return null;
+        }
     }
 
     private void OnDrawGizmosSelected()
     {
-        if(coOrdXY.y > 0){
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireCube(GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1].transform.position, new Vector3(1, 1, 0.1f));
-        }
+        
+        Gizmos.color = Color.red;
+
+        Vector3 abovePos  = (IsCellAbovePossible())?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y+1].transform.position:transform.position;
+        Vector3 eastPos  = (IsCellWestPossible())?GridGenerator.gridder.gridCells[coOrdXY.x+1, coOrdXY.y].transform.position:transform.position;
+        Vector3 belowPos  = (IsCellBelowPossible())?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1].transform.position:transform.position;
+        Vector3 westPos  = (IsCellEastPossible())?GridGenerator.gridder.gridCells[coOrdXY.x-1, coOrdXY.y].transform.position:transform.position;
+
+
+        Gizmos.DrawLine(transform.position, abovePos);
+        Gizmos.DrawLine(transform.position, eastPos);
+        Gizmos.DrawLine(transform.position, belowPos);
+        Gizmos.DrawLine(transform.position, westPos);
     }
 
     public IEnumerator BlockFall(){
 
         sr.color = blockColor;
 
-        if(!CellBelowIsEmpty()){
-            // There's a block below
-            yield break;
+        if(IsCellBelowPossible()){
+            if(CellBelow().containedBlock){
+                // There's a block below
+                yield break;
+            }
         }
 
-        Cell FallToCell = GetLowCell();
-        if(!GetLowCell()){
+        Cell FallToCell = GetLowestCellBelow();
+        if(!GetLowestCellBelow()){
             yield break;
         }
         
@@ -199,9 +247,11 @@ public class Block : MonoBehaviour
             yield return null;
         }
         transform.position = end;
+        aSource.PlayOneShot(dropSound, 1);
 
         ReassignHostCell(hostCell, FallToCell);
         BreakCount++;
+        remainingKnocks.text = (BreakingPoint - BreakCount).ToString();
 
         if(BreakCount == BreakingPoint){
             hostCell.containedBlock = null;
@@ -209,8 +259,10 @@ public class Block : MonoBehaviour
         }
 
         // knock down the ones we land on
-        if(!CellBelowIsEmpty() && coOrdXY.y > 0){
-            StartCoroutine(GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1].containedBlock.BlockFall() );
+        if(IsCellBelowPossible()){
+            if(CellBelow().containedBlock){
+                StartCoroutine(GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1].containedBlock.BlockFall() );
+            }
         }
 
         // blocks above will follow
@@ -221,19 +273,59 @@ public class Block : MonoBehaviour
 
         
         if(BreakCount == BreakingPoint){
-            Destroy(this.gameObject);
+            Break();
         }
     }
 
     public void ReassignHostCell(Cell oldCell, Cell newCell){
-        callLater = BlockAbove();
+        callLater = IsCellAbovePossible()?CellAbove().containedBlock:null;
         oldCell.containedBlock = null;
-        hostCell = newCell;
-        coOrdXY = newCell.coOrdXY;
-        newCell.containedBlock = this;
+
+        if(newCell){
+            hostCell = newCell;
+            coOrdXY = newCell.coOrdXY;
+            newCell.containedBlock = this;
+        }
+    }
+
+    public void Break(){
+        // Release my Cell
+        this.hostCell.containedBlock = null;
+
+        // PlayAnimation
+
+        // Tell above block to fall.
+        if(CellAbove()){
+            if(CellAbove().containedBlock){
+                StartCoroutine(CellAbove().containedBlock.BlockFall());
+
+            }
+        }
+    
+
+
+        if(this.isInterior){
+            // Kill Inhabitants
+            GameManager.gm.livesKilled ++;
+            GameManager.gm.remainingCitizens--;
+            GameManager.gm.CheckIfOver();
+        }
+
+        Destroy(this.gameObject);
+    }
+
+    public void Release(){
+        
     }
 
     public void StyleBlock(){
+
+        if(isInterior){
+            sr.sprite = s_inside;
+            citizen.SetActive(true);
+            return;
+        }
+
         Cell above  = (coOrdXY.y < GridGenerator.gridder.rows-1)?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y+1]:null;
         Cell below  = (coOrdXY.y > 0)?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1]:null;
         Cell west  = (coOrdXY.x > 0)?GridGenerator.gridder.gridCells[coOrdXY.x-1, coOrdXY.y]:null;
@@ -259,8 +351,7 @@ public class Block : MonoBehaviour
         }
         
 
-        Debug.Log(nArray);
-
+        
         Sprite newVar = (Sprite)this.GetType().GetField("s_" + nArray).GetValue(this);
         sr.sprite = newVar;
     }
@@ -269,7 +360,7 @@ public class Block : MonoBehaviour
         float timeElapsed = 0;
         float duration = 0.5f;
 
-        Color start = Color.green;;
+        Color start = Summoner.magic.SummonMagicColor;
 
         while (timeElapsed < duration)
         {
@@ -282,4 +373,8 @@ public class Block : MonoBehaviour
         sr.color = Color.white;
         yield return null;
     }
+
+
+
+    
 }

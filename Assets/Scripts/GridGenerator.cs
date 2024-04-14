@@ -14,7 +14,7 @@ public class GridGenerator : MonoBehaviour
     public GameObject block;
     public GameObject citizen;
 
-    public int[,] buildingMap  = new int[7,5]{ {0,0,0,0,0},{0,1,0,1,0},{0,1,1,1,0},{1,1,1,1,1},{0,1,2,1,0},{1,1,1,1,1},{0,1,1,1,0} };
+    public int[,] buildingMap  = new int[7,5]{ {0,0,0,0,0},{0,1,0,1,0},{0,2,1,1,0},{1,1,1,1,1},{0,1,2,1,0},{1,1,1,2,1},{0,1,1,1,0} };
 
     public Cell[,] gridCells; // 2D array to hold references to each cell  - (col, row)
 
@@ -52,7 +52,9 @@ public class GridGenerator : MonoBehaviour
                     newBlock.coOrdXY = new Vector2Int(x, y);
                     newCell.containedBlock = newBlock;
 
-                    newBlock.isBlock = false;
+                    newBlock.isInterior = true;
+                    GameManager.gm.totalCitizens ++;
+                    newBlock.BreakingPoint = 2;
                 }
             }
         }
@@ -67,6 +69,8 @@ public class GridGenerator : MonoBehaviour
                 }
             }
         }
+
+        GameManager.gm.remainingCitizens = GameManager.gm.totalCitizens;
 
         ready = true;
     }
@@ -83,6 +87,8 @@ public class GridGenerator : MonoBehaviour
 
         return newObj;
     }
+
+    
 
 
     private void OnDrawGizmos()

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,10 +10,23 @@ public class GameManager : MonoBehaviour
     public static GameManager gm;
     public bool PlayerTurnEnd = false;
 
+    public TextMeshProUGUI livesScore;
+
     public int SkipTurn = 0;
 
     [Range(0.1f,0.9f)]
     public float fireSpeed = 0.5f;
+
+    public int portalFreq = 5;
+
+    public int TurnCount = 0;
+
+    public int TurnWithinPortalLoop = 0;
+    public int livesSaved = 0;
+    public int livesKilled = 0;
+
+    public int remainingCitizens;
+    public int totalCitizens;
 
     public List<Block> flamingBlocks = new List<Block>();
     public List<Block> emberedBlocks = new List<Block>();
@@ -20,11 +35,23 @@ public class GameManager : MonoBehaviour
 
     void Awake(){
         gm = this;
-
     }
+
+    void Update(){
+        livesScore.text = $"{livesSaved.ToString()}/{GameManager.gm.totalCitizens}";
+        
+    }
+
     void Start()
     {
         StartCoroutine(StartGame());
+    }
+
+    public void CheckIfOver(){
+        if(remainingCitizens == 0){
+            string currentSceneName = SceneManager.GetActiveScene().name;
+            SceneManager.LoadScene(currentSceneName);
+        }
     }
 
     IEnumerator StartGame()
@@ -44,6 +71,8 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator TurnSequence(){
 
+        Portal.p.Turn();
+
         PlayerTurnEnd = false;
 
         // Nature Turn
@@ -52,7 +81,12 @@ public class GameManager : MonoBehaviour
         // Spread Fire
         foreach(Block b in flamingBlocks){
             if(Random.value > 1-fireSpeed){
-                b.GetRandomNeighborBlock().SetFire();
+
+                Block nextFireBlock = b.GetRandomNeighborBlock();
+
+                if(nextFireBlock != null){
+                    nextFireBlock.SetFire();
+                }
             }
         }
         foreach(Block b in emberedBlocks){
@@ -65,6 +99,11 @@ public class GameManager : MonoBehaviour
         // Player Turn
         yield return new WaitUntil(()=> PlayerTurnEnd );
         SkipTurn--;
+        TurnCount++;
+        TurnWithinPortalLoop++;
+        if(TurnWithinPortalLoop >= portalFreq){
+            TurnWithinPortalLoop = 0;
+        }
         StartCoroutine(TurnSequence());
     }
 }

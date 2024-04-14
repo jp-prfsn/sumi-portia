@@ -8,22 +8,32 @@ public class Summoner : MonoBehaviour
     public bool blockSelected = false;
     public bool cellSelected = false;
 
-    
+    public Color SummonMagicColor;
 
     public Block heldBlock;
+
+    public AudioSource aSource;
+    public AudioClip clickSound;
+    public AudioClip summonSound;
+
+
+
     // Start is called before the first frame update
     void Awake()
     {
         magic = this;
     }
 
-    // Update is called once per frame
+
     public void SelectBlock(Block b)
     {
         // Highlight the block
         blockSelected = true;
         b.select.SetActive(true);
         heldBlock = b;
+
+
+        aSource.PlayOneShot(clickSound,1);
     }
 
     public void SelectCell(Cell c)
@@ -40,10 +50,10 @@ public class Summoner : MonoBehaviour
 
             // Move the block and destroy any pre-contained block there.
             if(c.containedBlock){
-                Destroy(c.containedBlock.gameObject);
+                c.containedBlock.Break();
             }
 
-            Block ba = heldBlock.BlockAbove();
+            Block ba = heldBlock.CellAbove().containedBlock;
 
             heldBlock.ReassignHostCell( heldBlock.hostCell, c);
 
@@ -61,6 +71,8 @@ public class Summoner : MonoBehaviour
             cellSelected = false;
             heldBlock.select.SetActive(false);
             heldBlock = null;
+
+            aSource.PlayOneShot(summonSound,1);
 
 
             GameManager.gm.PlayerTurnEnd = true;

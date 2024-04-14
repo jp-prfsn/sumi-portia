@@ -50,6 +50,12 @@ TextureImporter:
   - first:
       213: 1604883754708951573
     second: simpletilemap_15
+  - first:
+      213: -672176442913931948
+    second: simpletilemap_16
+  - first:
+      213: -3779379745783176965
+    second: simpletilemap_17
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -411,7 +417,7 @@ TextureImporter:
       name: simpletilemap_13
       rect:
         serializedVersion: 2
-        x: 64
+        x: 32
         y: 32
         width: 32
         height: 32
@@ -432,8 +438,8 @@ TextureImporter:
       name: simpletilemap_14
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 64
+        y: 32
         width: 32
         height: 32
       alignment: 0
@@ -453,7 +459,7 @@ TextureImporter:
       name: simpletilemap_15
       rect:
         serializedVersion: 2
-        x: 32
+        x: 0
         y: 0
         width: 32
         height: 32
@@ -466,6 +472,48 @@ TextureImporter:
       bones: []
       spriteID: 512e8399541b54610800000000000000
       internalID: 1604883754708951573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: simpletilemap_16
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45dbab52613fba6f0800000000000000
+      internalID: -672176442913931948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: simpletilemap_17
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf0a94d2522fc8bc0800000000000000
+      internalID: -3779379745783176965
       vertices: []
       indices: 
       edges: []
