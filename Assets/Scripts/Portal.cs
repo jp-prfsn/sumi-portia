@@ -53,6 +53,17 @@ public class Portal : MonoBehaviour
         
         ActivePortal = (GameManager.gm.TurnCount > 0) && (GameManager.gm.TurnWithinPortalLoop == GameManager.gm.portalFreq-1);
 
+        if(GameManager.gm.TurnWithinPortalLoop == GameManager.gm.portalFreq-2){
+            GameManager.gm.Annouce("Portal Incoming!");
+        }
+
+        if(GameManager.gm.TurnWithinPortalLoop == GameManager.gm.portalFreq-1){
+            GameManager.gm.Annouce("Portal ready!");
+        }
+        if(GameManager.gm.TurnWithinPortalLoop == 0){
+            GameManager.gm.Annouce("");
+        }
+
         for(int i=0; i < boxHolder.childCount; i++)
         {
             if(i == GameManager.gm.TurnWithinPortalLoop){
@@ -64,7 +75,7 @@ public class Portal : MonoBehaviour
 
 
         portalAnim.SetBool("Open", ActivePortal);
-        bc.enabled = ActivePortal;
+        //bc.enabled = ActivePortal;
         if(ActivePortal){
             aSource.PlayOneShot(portalActiveSound,1);
         }
@@ -82,17 +93,18 @@ public class Portal : MonoBehaviour
 
 
                     GameManager.gm.livesSaved ++;
-                    GameManager.gm.remainingCitizens--;
+                    //GameManager.gm.remainingCitizens--;
 
                     GameManager.gm.CheckIfOver();
                     
                     
                     if(dropLater){
-                        StartCoroutine(Summoner.magic.heldBlock.CellAbove().containedBlock.BlockFall());
+                        StartCoroutine(dropLater.BlockFall());
                     }
                 }
 
                 aSource.PlayOneShot(portalAction,1);
+                StartCoroutine(flash());
 
                 Summoner.magic.heldBlock.Break();
                 Summoner.magic.heldBlock = null;
@@ -100,7 +112,25 @@ public class Portal : MonoBehaviour
 
                 GameManager.gm.PlayerTurnEnd = true;
             }
+        }else{
+            GameManager.gm.Annouce("The portal's not ready!");
         }
+    }
+
+
+    IEnumerator flash(){
+        sr.color = Color.white;
+        yield return new WaitForSeconds(0.2f);
+        sr.color = portalColor;
+        yield return new WaitForSeconds(0.2f);
+        sr.color = Color.white;
+        yield return new WaitForSeconds(0.2f);
+        sr.color = portalColor;
+        yield return new WaitForSeconds(0.2f);
+        sr.color = Color.white;
+        yield return new WaitForSeconds(0.2f);
+        sr.color = portalColor;
+        yield return new WaitForSeconds(0.2f);
     }
 
     

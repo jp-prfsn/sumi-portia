@@ -16,6 +16,8 @@ public class Block : MonoBehaviour
     private Color dCol;
     private Color blockColor;
 
+    bool invulnerable = false;
+
     public int BreakCount = 0;
     public int BreakingPoint = 6;
     public bool isInterior = false;
@@ -24,14 +26,12 @@ public class Block : MonoBehaviour
 
     public GameObject flame;
     public GameObject select;
+    public GameObject cracks;
+    public GameObject collapse;
 
     public string nArray;
 
     Block callLater;
-
-    //Cell NorthCell => (coOrdXY.y < GridGenerator.gridder.rows)?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y+1]:null;
-
-
 
     [Header("Appearance")]
     public Sprite s_0000;
@@ -153,8 +153,6 @@ public class Block : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(transform.position, new Vector3(1, 1, 0.1f));
-        //Handles.Label(transform.position, BreakCount.ToString());
-        Handles.Label(transform.position, coOrdXY.ToString());
     }
 
     public bool IsCellAbovePossible(){
@@ -218,6 +216,8 @@ public class Block : MonoBehaviour
 
     public IEnumerator BlockFall(){
 
+        
+
         sr.color = blockColor;
 
         if(IsCellBelowPossible()){
@@ -231,6 +231,11 @@ public class Block : MonoBehaviour
         if(!GetLowestCellBelow()){
             yield break;
         }
+
+
+
+        GameManager.gm.BlockFallCount++;
+        invulnerable = true;
         
 
         float timeElapsed = 0;
@@ -250,13 +255,12 @@ public class Block : MonoBehaviour
         aSource.PlayOneShot(dropSound, 1);
 
         ReassignHostCell(hostCell, FallToCell);
-        BreakCount++;
-        remainingKnocks.text = (BreakingPoint - BreakCount).ToString();
 
-        if(BreakCount == BreakingPoint){
-            hostCell.containedBlock = null;
-            // create rubble
-        }
+        GameManager.gm.BlockFallCount--; /* Movement Over */
+        invulnerable = false;
+        
+        Damage();
+        
 
         // knock down the ones we land on
         if(IsCellBelowPossible()){
@@ -271,8 +275,11 @@ public class Block : MonoBehaviour
             callLater = null;
         }
 
-        
-        if(BreakCount == BreakingPoint){
+        BreakCheck();
+    }
+
+    public void BreakCheck(){
+        if(BreakCount >= BreakingPoint){
             Break();
         }
     }
@@ -288,30 +295,53 @@ public class Block : MonoBehaviour
         }
     }
 
+    public void Damage(){
+        if(BreakCount < BreakingPoint){
+            BreakCount++;
+        }
+        remainingKnocks.text = (BreakingPoint - BreakCount).ToString();
+
+        if(BreakingPoint - BreakCount == 1){
+            cracks.SetActive(true);
+        }
+    }
+
     public void Break(){
-        // Release my Cell
-        this.hostCell.containedBlock = null;
+        if(!invulnerable){
+            // Release my Cell
+            this.hostCell.containedBlock = null;
 
-        // PlayAnimation
+            // PlayAnimation
 
-        // Tell above block to fall.
-        if(CellAbove()){
-            if(CellAbove().containedBlock){
-                StartCoroutine(CellAbove().containedBlock.BlockFall());
+            // Tell above block to fall.
+            if(CellAbove()){
+                if(CellAbove().containedBlock){
+                    StartCoroutine(CellAbove().containedBlock.BlockFall());
 
+                }
             }
+
+            collapse.SetActive(true);
+
+        
+            if(this.isInterior){
+                // Kill Inhabitants
+                GameManager.gm.livesKilled ++;
+                GameManager.gm.remainingCitizens--;
+                GameManager.gm.CheckIfOver();
+            }
+
+            StartCoroutine(Die());
+
+            //
         }
-    
+    }
 
-
-        if(this.isInterior){
-            // Kill Inhabitants
-            GameManager.gm.livesKilled ++;
-            GameManager.gm.remainingCitizens--;
-            GameManager.gm.CheckIfOver();
+    IEnumerator Die(){
+        yield return new WaitForSeconds(1);
+        if(!invulnerable){
+            Destroy(this.gameObject);
         }
-
-        Destroy(this.gameObject);
     }
 
     public void Release(){

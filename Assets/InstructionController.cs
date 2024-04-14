@@ -8,6 +8,8 @@ public class InstructionController : MonoBehaviour
 
     public Transform cnv;
     int page = 0;
+
+    public AudioSource aSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +23,7 @@ public class InstructionController : MonoBehaviour
         
         
         yield return new WaitUntil(()=>Input.GetMouseButtonDown(0));
+        aSource.Play();
         yield return null;
         cnv.GetChild(page).gameObject.SetActive(false);
         page++;
@@ -28,6 +31,8 @@ public class InstructionController : MonoBehaviour
 
 
         if(page == cnv.childCount){
+
+
 
             SceneManager.LoadScene("Gameplay");
             

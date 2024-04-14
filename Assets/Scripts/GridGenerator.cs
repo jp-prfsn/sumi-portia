@@ -14,12 +14,32 @@ public class GridGenerator : MonoBehaviour
     public GameObject block;
     public GameObject citizen;
 
-    public int[,] buildingMap  = new int[7,5]{ {0,0,0,0,0},{0,1,0,1,0},{0,2,1,1,0},{1,1,1,1,1},{0,1,2,1,0},{1,1,1,2,1},{0,1,1,1,0} };
+    public int[,] buildingMap1  = new int[7,5]{ {0,0,0,0,0},{0,1,0,1,0},{0,2,1,1,0},{1,1,1,1,1},{0,1,2,1,0},{1,1,1,2,1},{0,1,1,1,0} };
+    public int[,] buildingMap2  = new int[7,5]{ {0,0,0,0,0},{0,1,0,1,0},{0,2,0,1,0},{1,2,1,1,1},{1,1,0,2,1},{1,1,0,2,1},{1,1,0,1,1} };
+    public int[,] buildingMap3  = new int[7,5]{ {0,0,0,0,0},{0,0,0,1,0},{0,1,1,1,0},{0,2,2,1,0},{0,1,1,1,0},{0,1,2,2,0},{0,1,1,1,1} };
+    public int[,] buildingMap4  = new int[7,5]{{0,0,0,0,0},{1,1,1,1,1},{1,1,2,1,1},{1,2,1,2,1},{1,1,2,1,1},{1,0,1,0,1},{1,0,1,0,1} };
+
+
+    private int[,] buildingMap;
 
     public Cell[,] gridCells; // 2D array to hold references to each cell  - (col, row)
 
     void Awake(){
         gridder = this;
+        int mapSelector = Random.Range(1,5);
+
+        if(mapSelector == 1){
+            buildingMap = buildingMap1;
+        }
+        else if(mapSelector == 2){
+            buildingMap = buildingMap2;
+        }
+        else if(mapSelector == 3){
+            buildingMap = buildingMap3;
+        }
+        else if(mapSelector == 4){
+            buildingMap = buildingMap4;
+        }
     }
 
     void Start(){

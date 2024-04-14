@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public bool PlayerTurnEnd = false;
 
     public TextMeshProUGUI livesScore;
+    public TextMeshProUGUI annouceText;
 
     public int SkipTurn = 0;
 
@@ -28,6 +29,8 @@ public class GameManager : MonoBehaviour
     public int remainingCitizens;
     public int totalCitizens;
 
+    public int BlockFallCount = 0;
+
     public List<Block> flamingBlocks = new List<Block>();
     public List<Block> emberedBlocks = new List<Block>();
 
@@ -35,10 +38,21 @@ public class GameManager : MonoBehaviour
 
     void Awake(){
         gm = this;
+        portalFreq = Random.Range(3,6);
+        fireSpeed = Random.Range(0.1f,0.7f);
+    }
+
+    public void Annouce(string s){
+        annouceText.text = s;
     }
 
     void Update(){
         livesScore.text = $"{livesSaved.ToString()}/{GameManager.gm.totalCitizens}";
+
+
+        if (Input.GetKeyDown(KeyCode.Escape)){
+            SceneManager.LoadScene("Gameplay");
+        }
         
     }
 
@@ -49,8 +63,15 @@ public class GameManager : MonoBehaviour
 
     public void CheckIfOver(){
         if(remainingCitizens == 0){
-            string currentSceneName = SceneManager.GetActiveScene().name;
-            SceneManager.LoadScene(currentSceneName);
+
+            if(livesSaved > 0){
+                ScoreHolder.Instance.ratingNumber = Mathf.RoundToInt(totalCitizens / livesSaved)*100;
+            }else{
+                ScoreHolder.Instance.ratingNumber = Random.Range(60,80);
+            }
+            
+
+            SceneManager.LoadScene("Success");
         }
     }
 
@@ -61,25 +82,18 @@ public class GameManager : MonoBehaviour
         // Set Fire
         var allBlocks = FindObjectsOfType<Block>();
         allBlocks[Random.Range(0, allBlocks.Length)].SetFire();
-
-
-
-
-
         StartCoroutine(TurnSequence());
     }
 
     public IEnumerator TurnSequence(){
 
+        yield return new WaitUntil(()=> BlockFallCount == 0 );
         Portal.p.Turn();
-
         PlayerTurnEnd = false;
 
         // Nature Turn
-        
-
-        // Spread Fire
         foreach(Block b in flamingBlocks){
+            // Spread Fire
             if(Random.value > 1-fireSpeed){
 
                 Block nextFireBlock = b.GetRandomNeighborBlock();
@@ -88,22 +102,37 @@ public class GameManager : MonoBehaviour
                     nextFireBlock.SetFire();
                 }
             }
+
+            // Hurt Citizens
+            if(b.isInterior){
+                b.Damage();
+                b.BreakCheck();
+            }
         }
         foreach(Block b in emberedBlocks){
             flamingBlocks.Add(b);
+            
         }
+        
+        emberedBlocks.Clear();
 
+        
+
+
+        // Player Turn ------------------------
+
+        // Moving blocks
+
+        
         yield return new WaitUntil(()=> PlayerTurnEnd );
-
-
-        // Player Turn
-        yield return new WaitUntil(()=> PlayerTurnEnd );
+        
         SkipTurn--;
         TurnCount++;
         TurnWithinPortalLoop++;
         if(TurnWithinPortalLoop >= portalFreq){
             TurnWithinPortalLoop = 0;
         }
+        
         StartCoroutine(TurnSequence());
     }
 }
