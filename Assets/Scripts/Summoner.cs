@@ -53,7 +53,7 @@ public class Summoner : MonoBehaviour
                 c.containedBlock.Break();
             }
 
-            Block ba = heldBlock.CellAbove().containedBlock;
+            Cell ba = heldBlock.CellAbove();
 
             heldBlock.ReassignHostCell( heldBlock.hostCell, c);
 
@@ -62,7 +62,9 @@ public class Summoner : MonoBehaviour
             StartCoroutine(heldBlock.FlashGreen());
 
             if(ba != null){
-                StartCoroutine( ba.BlockFall() ); // drop block that was supported by this block
+                if(ba.containedBlock){
+                    StartCoroutine( ba.containedBlock.BlockFall() ); // drop block that was supported by this block
+                }
             }
 
             StartCoroutine( heldBlock.BlockFall() ); // drop this block if placed in midair

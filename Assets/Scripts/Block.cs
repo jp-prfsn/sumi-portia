@@ -31,7 +31,7 @@ public class Block : MonoBehaviour
 
     public string nArray;
 
-    Block callLater;
+    public Block callLater;
 
     [Header("Appearance")]
     public Sprite s_0000;
@@ -64,6 +64,8 @@ public class Block : MonoBehaviour
 
     public AudioSource aSource;
     public AudioClip dropSound;
+
+    public bool isFalling;
 
     public void SetFire(){
         if(!aflame){
@@ -218,24 +220,33 @@ public class Block : MonoBehaviour
 
         
 
-        sr.color = blockColor;
 
+
+        sr.color = blockColor;
         if(IsCellBelowPossible()){
             if(CellBelow().containedBlock){
                 // There's a block below
                 yield break;
             }
         }
-
         Cell FallToCell = GetLowestCellBelow();
         if(!GetLowestCellBelow()){
             yield break;
         }
 
 
+        if(isFalling){
+            yield break;
+        }else{
+            isFalling = true;
+        }
 
-        GameManager.gm.BlockFallCount++;
+
+
+
+
         invulnerable = true;
+        GameManager.gm.BlockFallCount++;
         
 
         float timeElapsed = 0;
@@ -254,18 +265,17 @@ public class Block : MonoBehaviour
         transform.position = end;
         aSource.PlayOneShot(dropSound, 1);
 
-        ReassignHostCell(hostCell, FallToCell);
 
         GameManager.gm.BlockFallCount--; /* Movement Over */
         invulnerable = false;
         
+        ReassignHostCell(hostCell, FallToCell);
         Damage();
         
-
         // knock down the ones we land on
         if(IsCellBelowPossible()){
             if(CellBelow().containedBlock){
-                StartCoroutine(GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1].containedBlock.BlockFall() );
+                StartCoroutine( CellBelow().containedBlock.BlockFall() );
             }
         }
 
@@ -274,6 +284,8 @@ public class Block : MonoBehaviour
             StartCoroutine(callLater.BlockFall() );
             callLater = null;
         }
+
+        isFalling = false;
 
         BreakCheck();
     }
@@ -317,11 +329,10 @@ public class Block : MonoBehaviour
             if(CellAbove()){
                 if(CellAbove().containedBlock){
                     StartCoroutine(CellAbove().containedBlock.BlockFall());
-
                 }
             }
 
-            collapse.SetActive(true);
+ 
 
         
             if(this.isInterior){
@@ -331,21 +342,35 @@ public class Block : MonoBehaviour
                 GameManager.gm.CheckIfOver();
             }
 
-            StartCoroutine(Die());
+            Destroy(this.gameObject);
 
             //
         }
     }
 
-    IEnumerator Die(){
-        yield return new WaitForSeconds(1);
-        if(!invulnerable){
-            Destroy(this.gameObject);
-        }
-    }
+ 
 
     public void Release(){
+        if(!invulnerable){
+            // Release my Cell
+            if(this.hostCell.containedBlock){
+                this.hostCell.containedBlock = null;
+            }
+            
+
         
+            if(this.isInterior){
+                // Kill Inhabitants
+                GameManager.gm.livesKilled ++;
+                GameManager.gm.remainingCitizens--;
+                GameManager.gm.CheckIfOver();
+            }
+
+            //Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
+
+            //
+        }
     }
 
     public void StyleBlock(){

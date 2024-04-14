@@ -24,6 +24,8 @@ public class Portal : MonoBehaviour
 
     public Color portalColor;
 
+    public GameObject portalTile;
+
     void Awake(){
         p = this;
     }
@@ -68,8 +70,10 @@ public class Portal : MonoBehaviour
         {
             if(i == GameManager.gm.TurnWithinPortalLoop){
                 boxHolder.GetChild(i).GetComponent<SpriteRenderer>().color = Color.white;
+                portalTile.SetActive(true);
             }else{
                 boxHolder.GetChild(i).GetComponent<SpriteRenderer>().color = portalColor;
+                portalTile.SetActive(false);
             }
         }
 
@@ -86,27 +90,30 @@ public class Portal : MonoBehaviour
         if(ActivePortal){
             if(Summoner.magic.blockSelected){
                 // Send it into the portal
+                Block dropLater;
                 if(Summoner.magic.heldBlock.isInterior){
 
-                    Block dropLater = Summoner.magic.heldBlock.CellAbove().containedBlock;
                     Summoner.magic.heldBlock.ReassignHostCell(Summoner.magic.heldBlock.hostCell, null);
-
+                    dropLater = Summoner.magic.heldBlock.callLater;
 
                     GameManager.gm.livesSaved ++;
-                    //GameManager.gm.remainingCitizens--;
-
-                    GameManager.gm.CheckIfOver();
-                    
+                    GameManager.gm.CheckIfOver();                    
                     
                     if(dropLater){
                         StartCoroutine(dropLater.BlockFall());
                     }
+
+                    Summoner.magic.heldBlock.Release();
+                }else{
+
+                    Summoner.magic.heldBlock.Break();
                 }
 
                 aSource.PlayOneShot(portalAction,1);
                 StartCoroutine(flash());
 
-                Summoner.magic.heldBlock.Break();
+                
+
                 Summoner.magic.heldBlock = null;
                 Summoner.magic.blockSelected = false;
 
