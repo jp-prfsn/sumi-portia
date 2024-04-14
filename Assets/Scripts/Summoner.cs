@@ -49,6 +49,8 @@ public class Summoner : MonoBehaviour
 
             heldBlock.transform.position = c.transform.position;
 
+            StartCoroutine(heldBlock.FlashGreen());
+
             if(ba != null){
                 StartCoroutine( ba.BlockFall() ); // drop block that was supported by this block
             }
@@ -62,15 +64,7 @@ public class Summoner : MonoBehaviour
 
 
             GameManager.gm.PlayerTurnEnd = true;
-
-
-
-
-            // Recursively check if a block is below until false
-
-            // Move down until block or bottom.
-
-            // Call the same on the above block
+            
 
         }
     }

@@ -207,6 +207,7 @@ MonoBehaviour:
   s_1101: {fileID: -1472567573125193318, guid: f3cc3f2c78937a94482a804818eee91b, type: 3}
   s_1011: {fileID: -3864336378242334278, guid: f3cc3f2c78937a94482a804818eee91b, type: 3}
   s_0111: {fileID: -3228581107797317133, guid: f3cc3f2c78937a94482a804818eee91b, type: 3}
+  sr: {fileID: 483147175257019407}
 --- !u!212 &483147175257019407
 SpriteRenderer:
   m_ObjectHideFlags: 0

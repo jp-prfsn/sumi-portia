@@ -28,6 +28,8 @@ public class Block : MonoBehaviour
 
     Block callLater;
 
+    //Cell NorthCell => (coOrdXY.y < GridGenerator.gridder.rows)?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y+1]:null;
+
 
 
     [Header("Appearance")]
@@ -51,6 +53,8 @@ public class Block : MonoBehaviour
     public Sprite s_1011;
     public Sprite s_0111;
 
+    public SpriteRenderer sr;
+
     public void SetFire(){
         aflame = true;
         flame.SetActive(true);
@@ -63,7 +67,7 @@ public class Block : MonoBehaviour
     void Start()
     {
         blockColor = Color.white;
-        GetComponent<SpriteRenderer>().color = blockColor;
+        sr.color = blockColor;
     }
 
 
@@ -75,9 +79,8 @@ public class Block : MonoBehaviour
             
         }else{
             Summoner.magic.SelectBlock(this);
-            GetComponent<SpriteRenderer>().color = Color.white;
+            sr.color = Color.white;
         }
-        Debug.Log("block clicked");
     }
 
     public Block GetRandomNeighborBlock(){
@@ -169,7 +172,7 @@ public class Block : MonoBehaviour
 
     public IEnumerator BlockFall(){
 
-        GetComponent<SpriteRenderer>().color = blockColor;
+        sr.color = blockColor;
 
         if(!CellBelowIsEmpty()){
             // There's a block below
@@ -259,6 +262,24 @@ public class Block : MonoBehaviour
         Debug.Log(nArray);
 
         Sprite newVar = (Sprite)this.GetType().GetField("s_" + nArray).GetValue(this);
-        GetComponent<SpriteRenderer>().sprite = newVar;
+        sr.sprite = newVar;
+    }
+
+    public IEnumerator FlashGreen(){
+        float timeElapsed = 0;
+        float duration = 0.5f;
+
+        Color start = Color.green;;
+
+        while (timeElapsed < duration)
+        {
+            float percent = Mathf.Clamp01( timeElapsed / duration);
+            float curvePercent = FallCurve.Evaluate( percent);
+            sr.color = Color.LerpUnclamped( start, Color.white, curvePercent);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+        sr.color = Color.white;
+        yield return null;
     }
 }
