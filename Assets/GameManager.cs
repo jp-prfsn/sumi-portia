@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     }
 
     void Update(){
-        livesScore.text = $"{livesSaved.ToString()}/{GameManager.gm.totalCitizens}";
+        livesScore.text = $"S:{livesSaved.ToString()}, K:{livesKilled}, T:{GameManager.gm.totalCitizens}";
 
 
         if (Input.GetKeyDown(KeyCode.Escape)){
@@ -67,13 +67,35 @@ public class GameManager : MonoBehaviour
     public void CheckIfOver(){
         if(remainingCitizens == 0){
 
-            if(livesSaved > 0 && totalCitizens > 0){
-                ScoreHolder.Instance.ratingNumber = Mathf.RoundToInt(livesSaved/totalCitizens)*100;
+            if(totalCitizens > 0){
+                ScoreHolder.Instance.ratingNumber = Mathf.RoundToInt(((float)livesSaved/(float)totalCitizens)*100);
             }
+
+            if(ScoreHolder.Instance.ratingNumber < 20){
+                ScoreHolder.Instance.ratingLetter = "F";
+                ScoreHolder.Instance.ratingTitle = "Sadistic";
+            }else if(ScoreHolder.Instance.ratingNumber < 40){
+                ScoreHolder.Instance.ratingLetter = "D";
+                ScoreHolder.Instance.ratingTitle = "Incompetent";
+            }else if(ScoreHolder.Instance.ratingNumber < 60){
+                ScoreHolder.Instance.ratingLetter = "C";
+                ScoreHolder.Instance.ratingTitle = "Middling";
+            }else if(ScoreHolder.Instance.ratingNumber < 80){
+                ScoreHolder.Instance.ratingLetter = "A";
+                ScoreHolder.Instance.ratingTitle = "Rather good!";
+            }else if(ScoreHolder.Instance.ratingNumber < 100){
+                ScoreHolder.Instance.ratingLetter = "A+";
+                ScoreHolder.Instance.ratingTitle = "Top notch!";
+            }
+
             
 
-            SceneManager.LoadScene("Success");
+            Invoke("LoadSuccess",2);
         }
+    }
+
+    private void LoadSuccess(){
+        SceneManager.LoadScene("Success");
     }
 
     IEnumerator StartGame()
@@ -111,16 +133,23 @@ public class GameManager : MonoBehaviour
 
                 Block nextFireBlock = b.GetRandomNeighborBlock();
 
-                if(nextFireBlock != null){
+                int limiter = 0;
+
+                while(nextFireBlock == null || nextFireBlock.gameObject.activeSelf == false && limiter < 20){
+                    nextFireBlock = b.GetRandomNeighborBlock();
+                    limiter++;
+                }
+
+                if(nextFireBlock != null && limiter < 20){
                     nextFireBlock.SetFire();
                 }
             }
 
             // Hurt Citizens
-            if(b.isInterior){
-                b.Damage();
+            //if(b.isInterior){
+                b.Damage("fire");
                 b.BreakCheck();
-            }
+            //}
         }
         foreach(Block b in emberedBlocks){
             flamingBlocks.Add(b);

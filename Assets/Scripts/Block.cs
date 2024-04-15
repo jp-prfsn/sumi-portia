@@ -15,6 +15,8 @@ public class Block : MonoBehaviour
 
     private Color dCol;
     private Color blockColor;
+    public Color damageColor;
+    public Color fireColor;
 
     bool invulnerable = false;
 
@@ -202,7 +204,7 @@ public class Block : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         
-        Gizmos.color = Color.red;
+        Gizmos.color = damageColor;
 
         Vector3 abovePos  = (IsCellAbovePossible())?GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y+1].transform.position:transform.position;
         Vector3 eastPos  = (IsCellWestPossible())?GridGenerator.gridder.gridCells[coOrdXY.x+1, coOrdXY.y].transform.position:transform.position;
@@ -223,12 +225,20 @@ public class Block : MonoBehaviour
 
 
         sr.color = blockColor;
+        // Bottom Level, can't fall
+        if(!IsCellBelowPossible()){
+            yield break;
+        }
+
+        // Block Below, can't fall
         if(IsCellBelowPossible()){
             if(CellBelow().containedBlock){
                 // There's a block below
                 yield break;
             }
         }
+
+
         Cell FallToCell = GetLowestCellBelow();
         if(!GetLowestCellBelow()){
             yield break;
@@ -270,18 +280,32 @@ public class Block : MonoBehaviour
         invulnerable = false;
         
         ReassignHostCell(hostCell, FallToCell);
-        Damage();
+        
+        // Both the falling cell & the cell that was underneath take damage from the collision
+        this.Damage("structural");
+
+        if(FallToCell.CellBelow()){
+            FallToCell.CellBelow().containedBlock.Damage("structural");
+            FallToCell.CellBelow().containedBlock.BreakCheck();
+        }
         
         // knock down the ones we land on
         if(IsCellBelowPossible()){
             if(CellBelow().containedBlock){
-                StartCoroutine( CellBelow().containedBlock.BlockFall() );
+                if(CellBelow().coOrdXY.y > 0){// Not already on the bottom
+                    if(CellBelow().containedBlock.gameObject.activeSelf){
+                        StartCoroutine( CellBelow().containedBlock.BlockFall() );
+
+                    }
+                }
             }
         }
 
         // blocks above will follow
         if(callLater){
-            StartCoroutine(callLater.BlockFall() );
+            if(callLater.gameObject.activeSelf){
+                StartCoroutine(callLater.BlockFall() );
+            }
             callLater = null;
         }
 
@@ -307,10 +331,16 @@ public class Block : MonoBehaviour
         }
     }
 
-    public void Damage(){
+    public void Damage(string cause){
+
+        Color causeColour = cause=="structural"?damageColor:fireColor;
+
         if(BreakCount < BreakingPoint){
             BreakCount++;
+            
+            StartCoroutine(FlashCol(causeColour));
         }
+
         remainingKnocks.text = (BreakingPoint - BreakCount).ToString();
 
         if(BreakingPoint - BreakCount == 1){
@@ -318,60 +348,45 @@ public class Block : MonoBehaviour
         }
     }
 
-    public void Break(){
+    public void Break( bool safe = false){
         if(!invulnerable){
             // Release my Cell
             this.hostCell.containedBlock = null;
 
-            // PlayAnimation
-
             // Tell above block to fall.
-            if(CellAbove()){
-                if(CellAbove().containedBlock){
-                    StartCoroutine(CellAbove().containedBlock.BlockFall());
+            if(safe){
+
+            }
+            else{
+                if(CellAbove()){
+                    if(CellAbove().containedBlock){
+                        if(CellAbove().containedBlock.gameObject.activeSelf){
+                            StartCoroutine(CellAbove().containedBlock.BlockFall());
+                        }
+                    }
                 }
             }
 
- 
-
-        
             if(this.isInterior){
                 // Kill Inhabitants
-                GameManager.gm.livesKilled ++;
-                GameManager.gm.remainingCitizens--;
-                GameManager.gm.CheckIfOver();
-            }
-
-            Destroy(this.gameObject);
-
-            //
-        }
-    }
-
- 
-
-    public void Release(){
-        if(!invulnerable){
-            // Release my Cell
-            if(this.hostCell.containedBlock){
-                this.hostCell.containedBlock = null;
-            }
-            
-
-        
-            if(this.isInterior){
-                // Kill Inhabitants
-                GameManager.gm.livesKilled ++;
+                if(safe){
+                    GameManager.gm.livesSaved ++;
+                }else{
+                    GameManager.gm.livesKilled ++;
+                }
+                
                 GameManager.gm.remainingCitizens--;
                 GameManager.gm.CheckIfOver();
             }
 
             //Destroy(this.gameObject);
             this.gameObject.SetActive(false);
-
-            //
         }
     }
+
+ 
+
+    
 
     public void StyleBlock(){
 
@@ -411,11 +426,11 @@ public class Block : MonoBehaviour
         sr.sprite = newVar;
     }
 
-    public IEnumerator FlashGreen(){
+    public IEnumerator FlashCol(Color flashCol){
         float timeElapsed = 0;
         float duration = 0.5f;
 
-        Color start = Summoner.magic.SummonMagicColor;
+        Color start = flashCol;
 
         while (timeElapsed < duration)
         {

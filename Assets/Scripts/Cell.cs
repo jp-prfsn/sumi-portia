@@ -24,6 +24,14 @@ public class Cell : MonoBehaviour
         bc.enabled = (containedBlock==null);
     }
 
+    public Cell CellBelow(){
+        if(coOrdXY.y > 0){
+            return GridGenerator.gridder.gridCells[coOrdXY.x, coOrdXY.y-1];
+        }else{
+            return null;
+        }
+    }
+
 
     
 }

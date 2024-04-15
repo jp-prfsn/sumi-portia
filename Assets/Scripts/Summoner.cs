@@ -59,15 +59,24 @@ public class Summoner : MonoBehaviour
 
             heldBlock.transform.position = c.transform.position;
 
-            StartCoroutine(heldBlock.FlashGreen());
+            if(heldBlock.gameObject.activeSelf){
+                StartCoroutine( heldBlock.FlashCol(SummonMagicColor) ); 
+            }
 
-            if(ba != null){
+
+            if(ba){
                 if(ba.containedBlock){
-                    StartCoroutine( ba.containedBlock.BlockFall() ); // drop block that was supported by this block
+                    if(ba.containedBlock.gameObject.activeSelf){
+                        StartCoroutine( ba.containedBlock.BlockFall() ); // drop block that was supported by this block
+                    }
                 }
             }
 
-            StartCoroutine( heldBlock.BlockFall() ); // drop this block if placed in midair
+            if(heldBlock){
+                if(heldBlock.gameObject.activeSelf){
+                    StartCoroutine( heldBlock.BlockFall() ); // drop this block if placed in midair
+                }
+            }
 
             blockSelected = false;
             cellSelected = false;

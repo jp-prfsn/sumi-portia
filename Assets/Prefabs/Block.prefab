@@ -367,6 +367,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  damageColor: {r: 0.47794044, g: 0.3019758, b: 0.5471698, a: 1}
+  fireColor: {r: 0.8584906, g: 0.5760394, b: 0.25511748, a: 1}
   BreakCount: 0
   BreakingPoint: 8
   isInterior: 0
@@ -376,6 +378,7 @@ MonoBehaviour:
   cracks: {fileID: 9073765945702591513}
   collapse: {fileID: 6005835443015333291}
   nArray: 
+  callLater: {fileID: 0}
   s_0000: {fileID: 1604883754708951573, guid: f3cc3f2c78937a94482a804818eee91b, type: 3}
   s_1111: {fileID: -1443916321082908623, guid: f3cc3f2c78937a94482a804818eee91b, type: 3}
   s_1000: {fileID: -5714323183975823641, guid: f3cc3f2c78937a94482a804818eee91b, type: 3}
@@ -399,6 +402,7 @@ MonoBehaviour:
   remainingKnocks: {fileID: 322362367896790487}
   aSource: {fileID: 3969618341476984375}
   dropSound: {fileID: 8300000, guid: bf6a1bce75aa9334c9066f25be2ea15d, type: 3}
+  isFalling: 0
 --- !u!212 &483147175257019407
 SpriteRenderer:
   m_ObjectHideFlags: 0

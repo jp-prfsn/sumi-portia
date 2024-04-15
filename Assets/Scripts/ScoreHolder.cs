@@ -8,6 +8,7 @@ public class ScoreHolder : MonoBehaviour
 
     public int ratingNumber;
     public string ratingLetter;
+    public string ratingTitle;
 
     public AudioSource mainSong;
     private void Awake()

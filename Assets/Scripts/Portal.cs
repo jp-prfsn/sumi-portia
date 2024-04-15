@@ -96,18 +96,15 @@ public class Portal : MonoBehaviour
                     Summoner.magic.heldBlock.ReassignHostCell(Summoner.magic.heldBlock.hostCell, null);
                     dropLater = Summoner.magic.heldBlock.callLater;
 
-                    GameManager.gm.livesSaved ++;
-                    GameManager.gm.CheckIfOver();                    
-                    
                     if(dropLater){
-                        StartCoroutine(dropLater.BlockFall());
+                        if(dropLater.gameObject.activeSelf){
+                            StartCoroutine(dropLater.BlockFall());
+                        }
                     }
-
-                    Summoner.magic.heldBlock.Release();
-                }else{
-
-                    Summoner.magic.heldBlock.Break();
                 }
+
+
+                Summoner.magic.heldBlock.Break(Summoner.magic.heldBlock.isInterior);
 
                 aSource.PlayOneShot(portalAction,1);
                 StartCoroutine(flash());
