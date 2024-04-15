@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     public TextMeshProUGUI livesScore;
     public TextMeshProUGUI annouceText;
+    public TextMeshProUGUI fireText;
+    public TextMeshProUGUI turnText;
 
     public int SkipTurn = 0;
 
@@ -38,8 +40,12 @@ public class GameManager : MonoBehaviour
 
     void Awake(){
         gm = this;
-        portalFreq = Random.Range(3,6);
-        fireSpeed = Random.Range(0.1f,0.7f);
+        portalFreq = Random.Range(2,6);
+        fireSpeed = Random.Range(0.3f,0.9f);
+
+        float f = fireSpeed;
+        f = Mathf.Round(f * 10.0f) * 0.1f; 
+        fireText.text = f.ToString();
     }
 
     public void Annouce(string s){
@@ -47,7 +53,9 @@ public class GameManager : MonoBehaviour
     }
 
     void Update(){
-        livesScore.text = $"S:{livesSaved.ToString()}, K:{livesKilled}, T:{GameManager.gm.totalCitizens}";
+        livesScore.text = $"Safe:{livesSaved.ToString()} | dead:{livesKilled} | total:{GameManager.gm.totalCitizens}";
+
+        turnText.text = TurnCount.ToString();
 
 
         if (Input.GetKeyDown(KeyCode.Escape)){
@@ -71,6 +79,10 @@ public class GameManager : MonoBehaviour
                 ScoreHolder.Instance.ratingNumber = Mathf.RoundToInt(((float)livesSaved/(float)totalCitizens)*100);
             }
 
+            float TimeFactor = (float)(100 - Mathf.Clamp(TurnCount, 0, 100)) / 100f;
+
+
+
             if(ScoreHolder.Instance.ratingNumber < 20){
                 ScoreHolder.Instance.ratingLetter = "F";
                 ScoreHolder.Instance.ratingTitle = "Sadistic";
@@ -83,7 +95,7 @@ public class GameManager : MonoBehaviour
             }else if(ScoreHolder.Instance.ratingNumber < 80){
                 ScoreHolder.Instance.ratingLetter = "A";
                 ScoreHolder.Instance.ratingTitle = "Rather good!";
-            }else if(ScoreHolder.Instance.ratingNumber < 100){
+            }else if(ScoreHolder.Instance.ratingNumber <= 100){
                 ScoreHolder.Instance.ratingLetter = "A+";
                 ScoreHolder.Instance.ratingTitle = "Top notch!";
             }

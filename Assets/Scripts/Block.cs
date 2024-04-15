@@ -69,6 +69,8 @@ public class Block : MonoBehaviour
 
     public bool isFalling;
 
+    bool unbroken = true;
+
     public void SetFire(){
         if(!aflame){
             aflame = true;
@@ -349,38 +351,46 @@ public class Block : MonoBehaviour
     }
 
     public void Break( bool safe = false){
-        if(!invulnerable){
-            // Release my Cell
-            this.hostCell.containedBlock = null;
+        if(unbroken){
+           
+            if(!invulnerable){
 
-            // Tell above block to fall.
-            if(safe){
+                unbroken = false;
 
-            }
-            else{
-                if(CellAbove()){
-                    if(CellAbove().containedBlock){
-                        if(CellAbove().containedBlock.gameObject.activeSelf){
-                            StartCoroutine(CellAbove().containedBlock.BlockFall());
+
+                
+                // Release my Cell
+                this.hostCell.containedBlock = null;
+
+                // Tell above block to fall.
+                if(safe){
+
+                }
+                else{
+                    if(CellAbove()){
+                        if(CellAbove().containedBlock){
+                            if(CellAbove().containedBlock.gameObject.activeSelf){
+                                StartCoroutine(CellAbove().containedBlock.BlockFall());
+                            }
                         }
                     }
                 }
-            }
 
-            if(this.isInterior){
-                // Kill Inhabitants
-                if(safe){
-                    GameManager.gm.livesSaved ++;
-                }else{
-                    GameManager.gm.livesKilled ++;
+                if(this.isInterior){
+                    // Kill Inhabitants
+                    if(safe){
+                        GameManager.gm.livesSaved ++;
+                    }else{
+                        GameManager.gm.livesKilled ++;
+                    }
+                    
+                    GameManager.gm.remainingCitizens--;
+                    GameManager.gm.CheckIfOver();
                 }
-                
-                GameManager.gm.remainingCitizens--;
-                GameManager.gm.CheckIfOver();
-            }
 
-            //Destroy(this.gameObject);
-            this.gameObject.SetActive(false);
+                //Destroy(this.gameObject);
+                this.gameObject.SetActive(false);
+            }
         }
     }
 
