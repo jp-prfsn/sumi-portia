@@ -53,6 +53,9 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)){
             SceneManager.LoadScene("Gameplay");
         }
+        if (Input.GetKeyDown(KeyCode.P)){
+            BlockFallCount = 0;
+        }
         
     }
 
@@ -64,10 +67,8 @@ public class GameManager : MonoBehaviour
     public void CheckIfOver(){
         if(remainingCitizens == 0){
 
-            if(livesSaved > 0){
-                ScoreHolder.Instance.ratingNumber = Mathf.RoundToInt(totalCitizens / livesSaved)*100;
-            }else{
-                ScoreHolder.Instance.ratingNumber = Random.Range(60,80);
+            if(livesSaved > 0 && totalCitizens > 0){
+                ScoreHolder.Instance.ratingNumber = Mathf.RoundToInt(livesSaved/totalCitizens)*100;
             }
             
 
@@ -85,7 +86,19 @@ public class GameManager : MonoBehaviour
         StartCoroutine(TurnSequence());
     }
 
+    private IEnumerator SaveMe(){
+        if(BlockFallCount > 0){
+            yield return new WaitForSeconds(2);
+            if(BlockFallCount > 0){
+                BlockFallCount = 0;
+            }
+        }
+        yield return null;
+    }
+
     public IEnumerator TurnSequence(){
+
+        StartCoroutine(SaveMe());
 
         yield return new WaitUntil(()=> BlockFallCount == 0 );
         Portal.p.Turn();
