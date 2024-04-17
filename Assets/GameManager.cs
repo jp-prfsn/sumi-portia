@@ -62,7 +62,8 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        portalFreq = Random.Range(2 , 3 + Mathf.RoundToInt((ScoreHolder.Instance.gameCount) / (float)gamesPerLevel));
+        //portalFreq = Random.Range(2 , 3 + Mathf.RoundToInt((ScoreHolder.Instance.gameCount) / (float)gamesPerLevel));
+        portalFreq = Random.Range(2 , 4) + Mathf.RoundToInt((float)ScoreHolder.Instance.gameCount/5);
 
         fireSpeed = Random.Range(0.3f,0.9f);
 
