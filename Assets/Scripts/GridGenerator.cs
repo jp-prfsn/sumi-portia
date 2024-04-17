@@ -17,7 +17,9 @@ public class GridGenerator : MonoBehaviour
     public int[,] buildingMap1  = new int[7,5]{ {0,0,0,0,0},{0,1,0,1,0},{0,2,1,1,0},{1,1,1,1,1},{0,1,2,1,0},{1,1,1,2,1},{0,1,1,1,0} };
     public int[,] buildingMap2  = new int[7,5]{ {0,0,0,0,0},{0,1,0,1,0},{0,2,0,1,0},{1,2,1,1,1},{1,1,0,2,1},{1,1,0,2,1},{1,1,0,1,1} };
     public int[,] buildingMap3  = new int[7,5]{ {0,0,0,0,0},{0,0,0,1,0},{0,1,1,1,0},{0,2,2,1,0},{0,1,1,1,0},{0,1,2,2,0},{0,1,1,1,1} };
-    public int[,] buildingMap4  = new int[7,5]{{0,0,0,0,0},{1,1,1,1,1},{1,1,2,1,1},{1,2,1,2,1},{1,1,2,1,1},{1,0,1,0,1},{1,0,1,0,1} };
+    public int[,] buildingMap4  = new int[7,5]{ {0,0,0,0,0},{1,1,1,1,1},{1,1,2,1,1},{1,2,1,2,1},{1,1,2,1,1},{1,0,1,0,1},{1,0,1,0,1} };
+    public int[,] buildingMap5  = new int[7,5]{ {0,0,0,0,0},{0,0,0,0,0},{0,2,0,2,0},{1,1,2,1,1},{0,1,1,1,0},{0,1,2,1,0},{0,0,1,0,0} };
+    public int[,] buildingMap6  = new int[7,5]{ {0,0,0,0,1},{0,0,0,0,2},{1,1,1,0,1},{2,0,1,0,2},{1,1,1,0,1},{1,0,0,0,2},{1,0,1,1,1} };
 
 
     private int[,] buildingMap;
@@ -26,7 +28,7 @@ public class GridGenerator : MonoBehaviour
 
     void Awake(){
         gridder = this;
-        int mapSelector = Random.Range(1,5);
+        int mapSelector = Random.Range(1,7);
 
         if(mapSelector == 1){
             buildingMap = buildingMap1;
@@ -39,6 +41,12 @@ public class GridGenerator : MonoBehaviour
         }
         else if(mapSelector == 4){
             buildingMap = buildingMap4;
+        }
+        else if(mapSelector == 5){
+            buildingMap = buildingMap5;
+        }
+        else if(mapSelector == 6){
+            buildingMap = buildingMap6;
         }
     }
 
@@ -114,7 +122,7 @@ public class GridGenerator : MonoBehaviour
     private void OnDrawGizmos()
     {
         // Draw grid with gizmos
-        Gizmos.color = Color.cyan;
+        /*Gizmos.color = Color.cyan;
         for (int x = 0; x < cols; x++)
         {
             for (int y = 0; y < rows; y++)
@@ -122,6 +130,6 @@ public class GridGenerator : MonoBehaviour
                 Vector3 cellPosition = transform.position + new Vector3((x * cellSize + cellSize / 2) - ((float)cols/2),  y * cellSize + cellSize / 2, 0);
                 Gizmos.DrawWireCube(cellPosition, new Vector3(cellSize, cellSize, 0.1f));
             }
-        }
+        }*/
     }
 }

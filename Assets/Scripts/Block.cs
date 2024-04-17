@@ -63,6 +63,8 @@ public class Block : MonoBehaviour
 
     public TextMeshProUGUI remainingKnocks;
 
+    public GameObject breakage;
+
 
     public AudioSource aSource;
     public AudioClip dropSound;
@@ -76,6 +78,7 @@ public class Block : MonoBehaviour
             aflame = true;
             flame.SetActive(true);
             GameManager.gm.emberedBlocks.Add(this);
+            Debug.Log("Flammable Neighbor Added to Ember List");
         }
     }
 
@@ -96,15 +99,11 @@ public class Block : MonoBehaviour
     void OnMouseDown()
     {
         if(Summoner.magic.blockSelected){
-
             if(this.aflame){
                 Summoner.magic.heldBlock.SetFire();
             }
-
             Summoner.magic.SelectCell(this.hostCell);
 
-            
-            
         }else{
             Summoner.magic.SelectBlock(this);
             sr.color = Color.white;
@@ -135,7 +134,9 @@ public class Block : MonoBehaviour
                 neighbours.Add(CellEast().containedBlock);
             }
         }
-        Debug.Log(neighbours.Count);
+        if(neighbours.Count == 0){
+            return null;
+        }
         return neighbours[Random.Range(0, neighbours.Count)];
     }
 
@@ -157,8 +158,8 @@ public class Block : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(transform.position, new Vector3(1, 1, 0.1f));
+        //Gizmos.color = Color.green;
+        //Gizmos.DrawWireCube(transform.position, new Vector3(1, 1, 0.1f));
     }
 
     public bool IsCellAbovePossible(){
@@ -220,51 +221,44 @@ public class Block : MonoBehaviour
         Gizmos.DrawLine(transform.position, westPos);
     }
 
-    public IEnumerator BlockFall(){
-
-        
-
-
-
-        sr.color = blockColor;
+    public void StartFall(){
         // Bottom Level, can't fall
         if(!IsCellBelowPossible()){
-            yield break;
+            return;
         }
 
         // Block Below, can't fall
         if(IsCellBelowPossible()){
             if(CellBelow().containedBlock){
                 // There's a block below
-                yield break;
+                return;
             }
         }
 
-
         Cell FallToCell = GetLowestCellBelow();
         if(!GetLowestCellBelow()){
-            yield break;
+            return;
         }
 
-
         if(isFalling){
-            yield break;
+            return;
         }else{
             isFalling = true;
         }
-
-
-
-
-
-        invulnerable = true;
         GameManager.gm.BlockFallCount++;
-        
+        StartCoroutine(BlockFall(FallToCell));
+    }
+
+    public IEnumerator BlockFall(Cell FallToCell){
+
+        invulnerable = true;        
 
         float timeElapsed = 0;
         float duration = 0.3f;
         Vector2 start = transform.position;
         Vector2 end = FallToCell.transform.position;
+
+        Cell originalCell = hostCell;
 
         while (timeElapsed < duration)
         {
@@ -276,19 +270,17 @@ public class Block : MonoBehaviour
         }
         transform.position = end;
         aSource.PlayOneShot(dropSound, 1);
-
-
-        GameManager.gm.BlockFallCount--; /* Movement Over */
         invulnerable = false;
-        
         ReassignHostCell(hostCell, FallToCell);
         
         // Both the falling cell & the cell that was underneath take damage from the collision
         this.Damage("structural");
 
         if(FallToCell.CellBelow()){
-            FallToCell.CellBelow().containedBlock.Damage("structural");
-            FallToCell.CellBelow().containedBlock.BreakCheck();
+            if(FallToCell.CellBelow().containedBlock){
+                FallToCell.CellBelow().containedBlock.Damage("structural");
+                FallToCell.CellBelow().containedBlock.BreakCheck();
+            }
         }
         
         // knock down the ones we land on
@@ -296,7 +288,7 @@ public class Block : MonoBehaviour
             if(CellBelow().containedBlock){
                 if(CellBelow().coOrdXY.y > 0){// Not already on the bottom
                     if(CellBelow().containedBlock.gameObject.activeSelf){
-                        StartCoroutine( CellBelow().containedBlock.BlockFall() );
+                        CellBelow().containedBlock.StartFall();
 
                     }
                 }
@@ -306,21 +298,41 @@ public class Block : MonoBehaviour
         // blocks above will follow
         if(callLater){
             if(callLater.gameObject.activeSelf){
-                StartCoroutine(callLater.BlockFall() );
+                callLater.StartFall();
             }
             callLater = null;
         }
 
         isFalling = false;
 
+        GameManager.gm.BlockFallCount--; /* Movement Over */
+
         BreakCheck();
     }
 
-    public void BreakCheck(){
-        if(BreakCount >= BreakingPoint){
-            Break();
+    public void FireSpread(){
+        if(Random.value > 1-GameManager.gm.fireSpeed){
+
+            int limiter = 0;
+            Block nextFireBlock = GetRandomNeighborBlock();
+            while((nextFireBlock == null || nextFireBlock.gameObject.activeSelf == false) && limiter < 20){
+                
+                limiter++;
+                nextFireBlock = GetRandomNeighborBlock();
+
+            }
+
+            if((nextFireBlock != null && nextFireBlock.gameObject.activeSelf) && limiter <= 20){
+                nextFireBlock.SetFire();
+                Debug.Log("Flammable Neighbor Found");
+                return;
+            }
+
+            Debug.Log("Flammable Neighbor Not Found: " + nextFireBlock);
         }
     }
+
+    
 
     public void ReassignHostCell(Cell oldCell, Cell newCell){
         callLater = IsCellAbovePossible()?CellAbove().containedBlock:null;
@@ -350,27 +362,38 @@ public class Block : MonoBehaviour
         }
     }
 
-    public void Break( bool safe = false){
+    public void BreakCheck(){
+        if(BreakCount >= BreakingPoint){
+            if(!GameManager.gm.destructionList.Contains(this)){
+                GameManager.gm.destructionList.Add(this);
+            }
+        }
+    }
+
+    public void Break(bool intoPortal = false, bool dontTouchNeighbors = false){
         if(unbroken){
            
             if(!invulnerable){
 
                 unbroken = false;
 
-
-                
                 // Release my Cell
                 this.hostCell.containedBlock = null;
 
                 // Tell above block to fall.
-                if(safe){
-
-                }
-                else{
+                if(intoPortal){
+                    // Sent Into Portal
+                    Debug.Log("Breaking a block into portal.");
+                }else if(dontTouchNeighbors){
+                    // Replacing a preexisting block
+                    Debug.Log("Breaking a block to be replaced.");
+                }else{
+                    // Check if a block is above, and if so, cause it to drop.
+                    Debug.Log("Breaking a block to be replaced.");
                     if(CellAbove()){
                         if(CellAbove().containedBlock){
                             if(CellAbove().containedBlock.gameObject.activeSelf){
-                                StartCoroutine(CellAbove().containedBlock.BlockFall());
+                                CellAbove().containedBlock.StartFall();
                             }
                         }
                     }
@@ -378,10 +401,12 @@ public class Block : MonoBehaviour
 
                 if(this.isInterior){
                     // Kill Inhabitants
-                    if(safe){
+                    if(intoPortal){
                         GameManager.gm.livesSaved ++;
+                        // play life saved particles
                     }else{
                         GameManager.gm.livesKilled ++;
+                        // Play blood particles
                     }
                     
                     GameManager.gm.remainingCitizens--;
@@ -389,6 +414,7 @@ public class Block : MonoBehaviour
                 }
 
                 //Destroy(this.gameObject);
+                Instantiate(breakage, this.transform.position, Quaternion.identity);
                 this.gameObject.SetActive(false);
             }
         }

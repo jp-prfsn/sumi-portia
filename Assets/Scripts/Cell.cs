@@ -33,5 +33,12 @@ public class Cell : MonoBehaviour
     }
 
 
+    void OnDrawGizmos(){
+        
+        Gizmos.color = containedBlock?Color.green:Color.red;
+        Gizmos.DrawCube(transform.position, new Vector3(0.8f, 0.8f, 1));
+    }
+
+
     
 }

@@ -8,6 +8,7 @@ public class WaitThenLoadGame : MonoBehaviour
 {
     public TextMeshProUGUI score;
     public TextMeshProUGUI scoreRANK;
+    public TextMeshProUGUI careerRANK;
     
     // Start is called before the first frame update
     void Start()
@@ -15,6 +16,7 @@ public class WaitThenLoadGame : MonoBehaviour
         StartCoroutine(WaitNLoad());
         score.text = ScoreHolder.Instance.ratingNumber.ToString() + "% (" + ScoreHolder.Instance.ratingLetter + ")";
         scoreRANK.text = "Review: " + ScoreHolder.Instance.ratingTitle;
+        careerRANK.text = "Career Score: " + ScoreHolder.Instance.careerAvg.ToString() + "/100";
     }
 
     // Update is called once per frame

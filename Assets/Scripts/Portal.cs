@@ -26,6 +26,8 @@ public class Portal : MonoBehaviour
 
     public GameObject portalTile;
 
+    public List<string> RescueQuips;
+
     void Awake(){
         p = this;
     }
@@ -96,15 +98,20 @@ public class Portal : MonoBehaviour
                     Summoner.magic.heldBlock.ReassignHostCell(Summoner.magic.heldBlock.hostCell, null);
                     dropLater = Summoner.magic.heldBlock.callLater;
 
+                    
+                    GameManager.gm.CameraBounce();
+
+                    GameManager.gm.Annouce(RescueQuips[Random.Range(0,RescueQuips.Count)]);
+
                     if(dropLater){
                         if(dropLater.gameObject.activeSelf){
-                            StartCoroutine(dropLater.BlockFall());
+                            dropLater.StartFall();
                         }
                     }
                 }
 
 
-                Summoner.magic.heldBlock.Break(Summoner.magic.heldBlock.isInterior);
+                Summoner.magic.heldBlock.Break(Summoner.magic.heldBlock.isInterior, true);
 
                 aSource.PlayOneShot(portalAction,1);
                 StartCoroutine(flash());
@@ -114,7 +121,7 @@ public class Portal : MonoBehaviour
                 Summoner.magic.heldBlock = null;
                 Summoner.magic.blockSelected = false;
 
-                GameManager.gm.PlayerTurnEnd = true;
+                GameManager.gm.WaitingForPlaceBlock = false;
             }
         }else{
             GameManager.gm.Annouce("The portal's not ready!");

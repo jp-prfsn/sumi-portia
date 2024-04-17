@@ -400,6 +400,8 @@ MonoBehaviour:
   sr: {fileID: 483147175257019407}
   citizen: {fileID: 2101015251772369398}
   remainingKnocks: {fileID: 322362367896790487}
+  breakage: {fileID: 6943250617233749751, guid: b558347e0d0939d44b2f4ee063658fc1,
+    type: 3}
   aSource: {fileID: 3969618341476984375}
   dropSound: {fileID: 8300000, guid: bf6a1bce75aa9334c9066f25be2ea15d, type: 3}
   isFalling: 0

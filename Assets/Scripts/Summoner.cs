@@ -16,6 +16,8 @@ public class Summoner : MonoBehaviour
     public AudioClip clickSound;
     public AudioClip summonSound;
 
+    public SpriteRenderer indicator;
+
 
 
     // Start is called before the first frame update
@@ -31,10 +33,15 @@ public class Summoner : MonoBehaviour
         blockSelected = true;
         b.select.SetActive(true);
         heldBlock = b;
+        indicator.color = Color.white;
 
 
         aSource.PlayOneShot(clickSound,1);
     }
+
+    
+
+    
 
     public void SelectCell(Cell c)
     {
@@ -46,12 +53,16 @@ public class Summoner : MonoBehaviour
             return;
         }
         cellSelected = true;
+        indicator.color = Color.white;
         if(blockSelected){
 
             // Move the block and destroy any pre-contained block there.
             if(c.containedBlock){
-                c.containedBlock.Break();
+                c.containedBlock.Break(false, true);
             }
+
+            indicator.color = SummonMagicColor;
+
 
             Cell ba = heldBlock.CellAbove();
 
@@ -67,14 +78,14 @@ public class Summoner : MonoBehaviour
             if(ba){
                 if(ba.containedBlock){
                     if(ba.containedBlock.gameObject.activeSelf){
-                        StartCoroutine( ba.containedBlock.BlockFall() ); // drop block that was supported by this block
+                        ba.containedBlock.StartFall(); // drop block that was supported by this block
                     }
                 }
             }
 
             if(heldBlock){
                 if(heldBlock.gameObject.activeSelf){
-                    StartCoroutine( heldBlock.BlockFall() ); // drop this block if placed in midair
+                    heldBlock.StartFall(); // drop this block if placed in midair
                 }
             }
 
@@ -85,8 +96,7 @@ public class Summoner : MonoBehaviour
 
             aSource.PlayOneShot(summonSound,1);
 
-
-            GameManager.gm.PlayerTurnEnd = true;
+            GameManager.gm.WaitingForPlaceBlock = false;
             
 
         }

@@ -9,6 +9,9 @@ public class ScoreHolder : MonoBehaviour
     public int ratingNumber;
     public string ratingLetter;
     public string ratingTitle;
+    public int careerAvg;
+
+    public int gameCount = 0;
 
     public AudioSource mainSong;
     private void Awake()
