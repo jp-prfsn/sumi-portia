@@ -30,6 +30,8 @@ public class Block : MonoBehaviour
     public GameObject select;
     public GameObject cracks;
     public GameObject collapse;
+    public GameObject tank;
+    public bool hasTank;
 
     public string nArray;
 
@@ -394,6 +396,25 @@ public class Block : MonoBehaviour
                         if(CellAbove().containedBlock){
                             if(CellAbove().containedBlock.gameObject.activeSelf){
                                 CellAbove().containedBlock.StartFall();
+                            }
+                        }
+                    }
+                }
+
+                if(this.hasTank){
+                    if(CellWest()){
+                        if(CellWest().containedBlock){
+                            if(CellWest().containedBlock.gameObject.activeSelf){
+                                CellWest().containedBlock.hasTank = true;
+                                CellWest().containedBlock.Break();
+                            }
+                        }
+                    }
+                    if(CellEast()){
+                        if(CellEast().containedBlock){
+                            if(CellEast().containedBlock.gameObject.activeSelf){
+                                CellEast().containedBlock.hasTank = true;
+                                CellEast().containedBlock.Break();
                             }
                         }
                     }

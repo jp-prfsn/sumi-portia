@@ -2565,7 +2565,7 @@ MonoBehaviour:
 
 
     To refresh the whole puzzle, press
-    [ESC]
+    [R]
 
 
     Enjoy!'
@@ -2897,7 +2897,7 @@ GameObject:
   - component: {fileID: 1236745654}
   - component: {fileID: 1236745656}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3974,7 +3974,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 4820742124852407542, guid: 328cf2ff6f859204a9e9b0eeb3967ee3,
+  m_Sprite: {fileID: -4843033385072174999, guid: 328cf2ff6f859204a9e9b0eeb3967ee3,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

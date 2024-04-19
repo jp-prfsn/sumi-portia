@@ -86,6 +86,11 @@ public class GridGenerator : MonoBehaviour
                     newBlock.coOrdXY = new Vector2Int(x, y);
                     newCell.containedBlock = newBlock;
 
+                    if(Random.value <= 0.05f){
+                        newBlock.hasTank = true;
+                        newBlock.tank.SetActive(true);
+                    }
+
                 }else if(buildingMap[(rows-1)-y,x] == 2){
                     // Create Citizen
                     Block newBlock  = CreateObjectAtCenterOfCell(x,y,block).GetComponent<Block>();

@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: patchware
   productName: Sumi & Portia
-  defaultCursor: {fileID: 0}
+  defaultCursor: {fileID: 2800000, guid: 8603021882fb0994796f29beb123f39b, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_ShowUnitySplashScreen: 1
@@ -44,8 +44,8 @@ PlayerSettings:
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 180
   defaultScreenHeight: 320
-  defaultScreenWidthWeb: 360
-  defaultScreenHeightWeb: 640
+  defaultScreenWidthWeb: 180
+  defaultScreenHeightWeb: 320
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 0
   m_MTRendering: 1

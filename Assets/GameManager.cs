@@ -60,6 +60,11 @@ public class GameManager : MonoBehaviour
 
 
 
+    public AudioSource aSource;
+    public AudioClip completeSound;
+
+
+
 
     void Awake(){
         gm = this;
@@ -107,12 +112,15 @@ public class GameManager : MonoBehaviour
 
     public void DrawPeepScoreboard(){
         Vector2 sizeD = PeepHolder.GetComponent<RectTransform>().sizeDelta;
-        PeepHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(12 * totalCitizens, sizeD.y);
+        
         for(int i=0; i< totalCitizens; i++)
         {
             GameObject psi = Instantiate(peepscoreimage);
             psi.transform.SetParent(PeepHolder);
+            psi.GetComponent<RectTransform>().localScale = Vector3.one;
         }
+
+        PeepHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(12 * totalCitizens, sizeD.y);
     }
     public void UpdatePeeps(bool alive){
         
@@ -191,8 +199,11 @@ public class GameManager : MonoBehaviour
             }
 
             ScoreHolder.Instance.gameCount++;
+            aSource.PlayOneShot(completeSound, 1);
 
             Invoke("LoadSuccess",2);
+
+            
         }
     }
 

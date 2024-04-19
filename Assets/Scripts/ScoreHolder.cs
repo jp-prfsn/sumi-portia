@@ -14,6 +14,12 @@ public class ScoreHolder : MonoBehaviour
     public int gameCount = 0;
 
     public AudioSource mainSong;
+
+
+
+    public Texture2D cursorTexture;
+    public CursorMode cursorMode = CursorMode.Auto;
+    public Vector2 hotSpot = Vector2.zero;
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.
@@ -29,6 +35,8 @@ public class ScoreHolder : MonoBehaviour
             // Become main KEEPER
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
+
+            Cursor.SetCursor(cursorTexture, hotSpot, cursorMode);
         }
     }
 
