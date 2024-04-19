@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
 
     public static GameManager gm;
     public bool WaitingForPlaceBlock = false;
-    public TextMeshProUGUI livesScore;
     public TextMeshProUGUI annouceText;
     public TextMeshProUGUI fireText;
     public TextMeshProUGUI turnText;
@@ -43,6 +43,12 @@ public class GameManager : MonoBehaviour
     public int gamesPerLevel = 2;
     public int minPortalTurns = 2;
     private Transform camTransform;
+
+    [Header("Rescue Counter")]
+    public int rescueKillCounter = 0;
+    public Sprite savedIcon,killedIcon;
+    public Transform PeepHolder;
+    public GameObject peepscoreimage;
 
 
 
@@ -99,6 +105,35 @@ public class GameManager : MonoBehaviour
         annouceText.text = s;
     }
 
+    public void DrawPeepScoreboard(){
+        Vector2 sizeD = PeepHolder.GetComponent<RectTransform>().sizeDelta;
+        PeepHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(12 * totalCitizens, sizeD.y);
+        for(int i=0; i< totalCitizens; i++)
+        {
+            GameObject psi = Instantiate(peepscoreimage);
+            psi.transform.SetParent(PeepHolder);
+        }
+    }
+    public void UpdatePeeps(bool alive){
+        
+        StartCoroutine(MexicanWave(alive));
+    }
+
+    private IEnumerator MexicanWave(bool alive){
+        for(int i=0; i< totalCitizens; i++)
+        {
+            RectTransform ch = PeepHolder.transform.GetChild(i).GetComponent<RectTransform>();
+            ch.anchoredPosition -= new Vector2(0,2);
+            yield return new WaitForSeconds(0.1f);
+            ch.anchoredPosition += new Vector2(0,2);
+            if(i == rescueKillCounter){
+                ch.GetComponent<Image>().sprite = alive?savedIcon:killedIcon;
+                rescueKillCounter++;
+                yield break;
+            }
+        }
+    }
+
     public void BlockDestroyRound(){
 
         for(int i= destructionList.Count-1; i >= 0; i--){
@@ -110,8 +145,10 @@ public class GameManager : MonoBehaviour
         destructionList.Clear();
     }
 
+    
+
     void Update(){
-        livesScore.text = $"Safe:{livesSaved.ToString()} | dead:{livesKilled} | total:{totalCitizens}";
+
 
         turnText.text = TurnCount.ToString();
 

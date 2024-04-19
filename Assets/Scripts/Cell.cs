@@ -9,6 +9,8 @@ public class Cell : MonoBehaviour
     public Vector2Int coOrdXY;
     private BoxCollider2D bc;
 
+    public GameObject grass;
+
     // Start is called before the first frame update
     void Start()
     {

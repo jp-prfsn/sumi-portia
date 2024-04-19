@@ -20,6 +20,13 @@ public class GridGenerator : MonoBehaviour
     public int[,] buildingMap4  = new int[7,5]{ {0,0,0,0,0},{1,1,1,1,1},{1,1,2,1,1},{1,2,1,2,1},{1,1,2,1,1},{1,0,1,0,1},{1,0,1,0,1} };
     public int[,] buildingMap5  = new int[7,5]{ {0,0,0,0,0},{0,0,0,0,0},{0,2,0,2,0},{1,1,2,1,1},{0,1,1,1,0},{0,1,2,1,0},{0,0,1,0,0} };
     public int[,] buildingMap6  = new int[7,5]{ {0,0,0,0,1},{0,0,0,0,2},{1,1,1,0,1},{2,0,1,0,2},{1,1,1,0,1},{1,0,0,0,2},{1,0,1,1,1} };
+    public int[,] buildingMap7  = new int[7,5]{{1,1,1,1,1},{1,2,1,2,1},{1,1,2,1,1},{1,2,1,2,1},{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1} };
+    public int[,] buildingMap8  = new int[7,5]{ {1,1,1,1,1},{1,0,0,0,1},{2,0,2,0,2},{1,1,2,1,1},{0,1,2,1,0},{0,2,2,2,0},{0,1,0,1,0} };
+
+
+
+
+
 
 
     private int[,] buildingMap;
@@ -28,7 +35,7 @@ public class GridGenerator : MonoBehaviour
 
     void Awake(){
         gridder = this;
-        int mapSelector = Random.Range(1,7);
+        int mapSelector = Random.Range(1,9);
 
         if(mapSelector == 1){
             buildingMap = buildingMap1;
@@ -47,6 +54,12 @@ public class GridGenerator : MonoBehaviour
         }
         else if(mapSelector == 6){
             buildingMap = buildingMap6;
+        }
+        else if(mapSelector == 7){
+            buildingMap = buildingMap7;
+        }
+        else if(mapSelector == 8){
+            buildingMap = buildingMap8;
         }
     }
 
@@ -84,6 +97,12 @@ public class GridGenerator : MonoBehaviour
                     GameManager.gm.totalCitizens ++;
                     newBlock.BreakingPoint = 2;
                 }
+
+                if(y == 0){
+                    newCell.grass.SetActive(true);
+                }
+
+                
             }
         }
 
@@ -99,6 +118,7 @@ public class GridGenerator : MonoBehaviour
         }
 
         GameManager.gm.remainingCitizens = GameManager.gm.totalCitizens;
+        GameManager.gm.DrawPeepScoreboard();
 
         ready = true;
     }

@@ -403,9 +403,11 @@ public class Block : MonoBehaviour
                     // Kill Inhabitants
                     if(intoPortal){
                         GameManager.gm.livesSaved ++;
+                        GameManager.gm.UpdatePeeps(true);
                         // play life saved particles
                     }else{
                         GameManager.gm.livesKilled ++;
+                        GameManager.gm.UpdatePeeps(false);
                         // Play blood particles
                     }
                     
