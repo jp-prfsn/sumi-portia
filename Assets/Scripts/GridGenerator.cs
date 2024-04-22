@@ -22,6 +22,8 @@ public class GridGenerator : MonoBehaviour
     public int[,] buildingMap6  = new int[7,5]{ {0,0,0,0,1},{0,0,0,0,2},{1,1,1,0,1},{2,0,1,0,2},{1,1,1,0,1},{1,0,0,0,2},{1,0,1,1,1} };
     public int[,] buildingMap7  = new int[7,5]{{1,1,1,1,1},{1,2,1,2,1},{1,1,2,1,1},{1,2,1,2,1},{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1} };
     public int[,] buildingMap8  = new int[7,5]{ {1,1,1,1,1},{1,0,0,0,1},{2,0,2,0,2},{1,1,2,1,1},{0,1,2,1,0},{0,2,2,2,0},{0,1,0,1,0} };
+    public int[,] buildingMap9  = new int[7,5]{ {0,1,0,0,0},{0,1,1,0,0},{0,1,0,0,0},{0,1,1,1,0},{0,1,2,0,0},{0,1,1,1,0},{0,2,2,2,0} };
+    public int[,] buildingMap10  = new int[7,5]{ {0,0,0,0,0},{1,1,0,0,0},{1,1,1,1,2},{1,1,1,1,1},{2,1,0,0,0},{2,1,0,0,0},{2,1,0,0,1} };
 
 
 
@@ -35,7 +37,7 @@ public class GridGenerator : MonoBehaviour
 
     void Awake(){
         gridder = this;
-        int mapSelector = Random.Range(1,9);
+        int mapSelector = Random.Range(1,11);
 
         if(mapSelector == 1){
             buildingMap = buildingMap1;
@@ -60,6 +62,12 @@ public class GridGenerator : MonoBehaviour
         }
         else if(mapSelector == 8){
             buildingMap = buildingMap8;
+        }
+        else if(mapSelector == 9){
+            buildingMap = buildingMap9;
+        }
+        else if(mapSelector == 10){
+            buildingMap = buildingMap10;
         }
     }
 

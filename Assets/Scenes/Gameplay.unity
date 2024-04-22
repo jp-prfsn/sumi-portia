@@ -745,7 +745,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 71b8dc24ec6610f4a9dc497408e32043, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.36078432}
   m_FlipX: 0
@@ -1339,7 +1339,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -1752430859451195970, guid: 9aea880da4fc4d042a41aa2deda96dc5,
     type: 3}
-  m_Color: {r: 0.8117648, g: 0.42352945, b: 0.7803922, a: 1}
+  m_Color: {r: 0.84705883, g: 0.54901963, b: 0.6039216, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1572,7 +1572,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -8580069082308837021, guid: a413688befaa62647b6d8b0a354ff6cc,
     type: 3}
-  m_Color: {r: 0.8113208, g: 0.4247953, b: 0.7822765, a: 1}
+  m_Color: {r: 0.84705883, g: 0.54901963, b: 0.6039216, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2093,7 +2093,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockSelected: 0
   cellSelected: 0
-  SummonMagicColor: {r: 0.45882353, g: 0.85882354, b: 0.8039216, a: 1}
+  SummonMagicColor: {r: 0.6, g: 0.75686276, b: 0.7254902, a: 1}
   heldBlock: {fileID: 0}
   aSource: {fileID: 1113885433}
   clickSound: {fileID: 8300000, guid: fc86e004b9438a647a17748a2d4fc229, type: 3}
@@ -2154,7 +2154,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: 2764418452435308997, guid: a413688befaa62647b6d8b0a354ff6cc,
     type: 3}
-  m_Color: {r: 0.45882353, g: 0.85882354, b: 0.8039216, a: 1}
+  m_Color: {r: 0.6, g: 0.75686276, b: 0.7254902, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2377,8 +2377,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291259599
-  m_fontColor: {r: 0.8117648, g: 0.42352945, b: 0.7803922, a: 1}
+    rgba: 4288318680
+  m_fontColor: {r: 0.84705883, g: 0.54901963, b: 0.6039216, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2661,7 +2661,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: 2189510010676529607, guid: 8e8275fc689422247b41be9e98e4a240,
     type: 3}
-  m_Color: {r: 0.8117648, g: 0.42352945, b: 0.7803922, a: 1}
+  m_Color: {r: 0.84705883, g: 0.54901963, b: 0.6039216, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2720,7 +2720,7 @@ MonoBehaviour:
   boxSpacer: 0.3
   filledBox: {fileID: 4727633781103762509, guid: 8ff33c0e433f20a448072ab05b3918ef,
     type: 3}
-  portalColor: {r: 0.8117648, g: 0.42352945, b: 0.7803922, a: 1}
+  portalColor: {r: 0.84705883, g: 0.54901963, b: 0.6039216, a: 1}
   portalTile: {fileID: 817849354}
   RescueQuips:
   - Off you go!
