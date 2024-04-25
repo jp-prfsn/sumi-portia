@@ -50,6 +50,25 @@ public class GameManager : MonoBehaviour
     public Transform PeepHolder;
     public GameObject peepscoreimage;
 
+    public GameObject canv;
+
+
+    public Transform TutorialFocus;
+    public TextMeshProUGUI commandText;
+    public void TutorialFocusOn(Transform focusOnThis, string command){
+        TutorialFocus.gameObject.SetActive(true);
+        TutorialFocus.position = focusOnThis.position;
+        commandText.text = command;
+        canv.SetActive(false);
+    }
+    public void LoseTutorialFocus(){
+        TutorialFocus.gameObject.SetActive(false);
+        canv.SetActive(true);
+    }
+
+    public bool movingBlocksTutflag = false;
+    public bool portalTutflag = false;
+
 
 
     [Header("Camera Shake")]
@@ -62,6 +81,10 @@ public class GameManager : MonoBehaviour
 
     public AudioSource aSource;
     public AudioClip completeSound;
+
+    public AudioSource livesAudio;
+
+    
 
 
 
@@ -128,14 +151,18 @@ public class GameManager : MonoBehaviour
     }
 
     private IEnumerator MexicanWave(bool alive){
+        livesAudio.pitch = 1;
         for(int i=0; i< totalCitizens; i++)
         {
             RectTransform ch = PeepHolder.transform.GetChild(i).GetComponent<RectTransform>();
             ch.anchoredPosition -= new Vector2(0,2);
+            livesAudio.Play();
             yield return new WaitForSeconds(0.1f);
+            livesAudio.pitch += 0.2f;
             ch.anchoredPosition += new Vector2(0,2);
             if(i == rescueKillCounter){
                 ch.GetComponent<Image>().sprite = alive?savedIcon:killedIcon;
+                
                 rescueKillCounter++;
                 yield break;
             }
@@ -215,6 +242,14 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitUntil(()=> GridGenerator.gridder.ready);
 
+        if(ScoreHolder.Instance.gameCount == 0){
+            movingBlocksTutflag = false;
+            portalTutflag = false;
+        }else{
+            movingBlocksTutflag = true;
+            portalTutflag = true;
+        }
+
         // Set Fire
         var allBlocks = FindObjectsOfType<Block>();
         allBlocks[Random.Range(0, allBlocks.Length)].SetFire();
@@ -229,10 +264,42 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator TurnSequence(){
 
+        if(!portalTutflag && TurnWithinPortalLoop == portalFreq-1){
+            // Select a citizen
+            TutorialFocusOn(GridGenerator.gridder.RandomBlockWithCitizen().transform, "When the portal is ready, target an occupied block");
+            yield return new WaitUntil(()=> Summoner.magic.blockSelected );
+            yield return new WaitForSeconds(0.5f);
+            // Click the portal
+            TutorialFocusOn(Portal.p.transform, "Click to send them safely into the portal");
+            
+        }
+        if(!movingBlocksTutflag){
+            // click a random block
+            Block firstBlock = GridGenerator.gridder.RandomBlock();
+            TutorialFocusOn(firstBlock.transform, "Click to target a block");
+            yield return new WaitUntil(()=> Summoner.magic.blockSelected );
+            yield return new WaitForSeconds(0.5f);
+            // click a random block
+            TutorialFocusOn(GridGenerator.gridder.RandomBlock(firstBlock).transform, "Click to summon it to a new location.");
+        }
+
         /*-- Player Turn Starts --*/
         clickIndicator.enabled = true;
         WaitingForPlaceBlock = true;
+
         yield return new WaitUntil(()=> !WaitingForPlaceBlock );
+
+
+        if(!movingBlocksTutflag){
+            yield return new WaitForSeconds(0.5f);
+            LoseTutorialFocus();
+            movingBlocksTutflag = true;
+        }
+        if(!portalTutflag && TurnWithinPortalLoop == portalFreq-1){
+            yield return new WaitForSeconds(0.5f);
+            LoseTutorialFocus();
+            portalTutflag = true;
+        }
         clickIndicator.enabled = false;
         yield return new WaitForSeconds(0.5f); 
         /*-- Player Turn Over --*/
@@ -270,11 +337,17 @@ public class GameManager : MonoBehaviour
         }
 
         yield return new WaitUntil(()=> NoBlocksMoving );
+
         Portal.p.Turn();
         
+        
+        
 
-        
-        
         StartCoroutine(TurnSequence());
+    }
+
+
+    public IEnumerator moveTutPointer(){
+        yield return null;
     }
 }

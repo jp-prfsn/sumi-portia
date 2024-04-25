@@ -63,6 +63,8 @@ public class Portal : MonoBehaviour
 
         if(GameManager.gm.TurnWithinPortalLoop == GameManager.gm.portalFreq-1){
             GameManager.gm.Annouce("Portal ready!");
+
+            
         }
         if(GameManager.gm.TurnWithinPortalLoop == 0){
             GameManager.gm.Annouce("");

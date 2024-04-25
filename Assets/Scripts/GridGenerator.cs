@@ -71,6 +71,38 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
+    public Cell RandomCell(){
+        return gridCells[Random.Range(0,cols), Random.Range(0,rows)];
+    }
+
+    public Block RandomBlock(Block excludeBlock = null){
+        again:
+        Cell checkthiscell = RandomCell();
+        while(!checkthiscell.containedBlock){
+            checkthiscell = RandomCell();
+        }
+        if(excludeBlock){
+            if(checkthiscell.containedBlock == excludeBlock){
+                goto again;
+            }
+        }
+        return checkthiscell.containedBlock;
+    }
+    public Block RandomBlockWithCitizen(){
+        Cell checkthiscell = RandomCell();
+        Block citizenBlock = null;
+        while(!citizenBlock){
+            checkthiscell = RandomCell();
+            if(checkthiscell.containedBlock){
+                if(checkthiscell.containedBlock.isInterior){
+                    citizenBlock = checkthiscell.containedBlock;
+                }
+            }
+        }
+        return citizenBlock;
+        
+    }
+
     void Start(){
         gridCells = new Cell[cols,rows];
         
@@ -165,4 +197,6 @@ public class GridGenerator : MonoBehaviour
             }
         }*/
     }
+
+    
 }

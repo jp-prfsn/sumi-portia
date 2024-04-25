@@ -91,6 +91,7 @@ public class Block : MonoBehaviour
     {
         blockColor = Color.white;
         sr.color = blockColor;
+        BreakingPoint = isInterior?Random.Range(2,4):Random.Range(3,9);
         remainingKnocks.text = (BreakingPoint - BreakCount).ToString();
     }
 
