@@ -35,6 +35,8 @@ public class GridGenerator : MonoBehaviour
 
     public Cell[,] gridCells; // 2D array to hold references to each cell  - (col, row)
 
+    
+
     void Awake(){
         gridder = this;
         int mapSelector = Random.Range(1,11);
@@ -70,6 +72,10 @@ public class GridGenerator : MonoBehaviour
             buildingMap = buildingMap10;
         }
     }
+
+    
+
+  
 
     public Cell RandomCell(){
         return gridCells[Random.Range(0,cols), Random.Range(0,rows)];

@@ -34,7 +34,7 @@ public class InstructionController : MonoBehaviour
 
 
 
-            SceneManager.LoadScene("Gameplay");
+            SceneManager.LoadScene("LevelSelect");
             
         }else{
             cnv.GetChild(page).gameObject.SetActive(true);

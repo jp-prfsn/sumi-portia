@@ -86,20 +86,42 @@ public class GameManager : MonoBehaviour
 
     
 
+    public List<GameObject> PortiaRelatedThings = new List<GameObject>();
 
+    
+
+    bool PortiaMissing = false;
 
 
     void Awake(){
         gm = this;
         camTransform = Camera.main.transform;
+        aSource = GetComponent<AudioSource>();
         
     }
     void Start()
     {
-        //portalFreq = Random.Range(2 , 3 + Mathf.RoundToInt((ScoreHolder.Instance.gameCount) / (float)gamesPerLevel));
-        portalFreq = Random.Range(2 , 4) + Mathf.RoundToInt((float)ScoreHolder.Instance.gameCount/5);
+        if(ScoreHolder.Instance.currentLevel == 14){
+            ScoreHolder.Instance.PortiaMissing = true;
+        }
 
-        fireSpeed = Random.Range(0.3f,0.9f);
+        PortiaMissing = ScoreHolder.Instance.PortiaMissing;
+        if(PortiaMissing){
+            foreach(GameObject go in PortiaRelatedThings){
+                go.SetActive(false);
+            }
+        }
+
+
+
+        portalFreq = Mathf.Max( minPortalTurns, ScoreHolder.Instance.currentLevel + 1 );
+
+        ScoreHolder.Instance.PlayGameMusic();
+
+        fireSpeed = Random.Range( 0.3f, 0.9f );
+        if(PortiaMissing){
+            fireSpeed = 1;
+        }
 
         float f = fireSpeed;
         f = Mathf.Round(f * 10.0f) * 0.1f; 
@@ -189,6 +211,11 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R)){
             SceneManager.LoadScene("Gameplay");
+        }
+
+        if (Input.GetKeyDown(KeyCode.X)){
+            remainingCitizens = 0;
+            CheckIfOver();
         }
         
     }
