@@ -40,7 +40,7 @@ public class Author : MonoBehaviour
     {
         dude = this;
 
-        if(StartNodes[ScoreHolder.Instance.currentLevel] != null && ScoreHolder.Instance.PortiaMissing == false){
+        if(StartNodes[ScoreHolder.Instance.currentLevel] != null){
             currentNode = StartNodes[ScoreHolder.Instance.currentLevel];
             
             DialogueManager.dude.speaker1.gameObject.SetActive(true);

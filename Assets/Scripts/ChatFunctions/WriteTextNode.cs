@@ -6,35 +6,6 @@ using UnityEditor;
 public enum Speaker { Sumi , Portia }
 
 
-[CustomEditor(typeof(WriteTextNode))]
-public class WriteTextNodeEditor : Editor
-{
-    
-    public override void OnInspectorGUI()
-    {
-        WriteTextNode myScript = (WriteTextNode)target;
-        GUILayout.Space(10);
-        
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-
-        if(GUILayout.Button("Create Child Node", GUILayout.Width(200), GUILayout.Height(50)))
-        {
-
-            // Call the CreateNewNode method of the WriteTextNode script
-            myScript.CreateNewNode();
-
-
-        }
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-        GUILayout.Space(10);
-        DrawDefaultInspector();
-
-    }
-}
-
-
 
 public class WriteTextNode : MonoBehaviour
 {
@@ -122,8 +93,10 @@ public class WriteTextNode : MonoBehaviour
             style.alignment = TextAnchor.MiddleCenter;
 
 
-
-            Handles.Label(transform.position, text, style);
+            #if UNITY_EDITOR
+                Handles.Label(transform.position, text, style);
+            #endif
+            
         }
 
          

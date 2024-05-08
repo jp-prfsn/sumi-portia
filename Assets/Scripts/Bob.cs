@@ -18,7 +18,9 @@ public class Bob : MonoBehaviour
     }
 
     void StartIt(){
-        StartCoroutine(bob());
+        if(this.gameObject.activeSelf){
+            StartCoroutine(bob());
+        }
 
     }
 
@@ -33,6 +35,8 @@ public class Bob : MonoBehaviour
             up = true;
         }
         yield return new WaitForSeconds(bobSpeed);
-        StartCoroutine(bob());
+        if(this.gameObject.activeSelf){
+            StartCoroutine(bob());
+        }
     }
 }

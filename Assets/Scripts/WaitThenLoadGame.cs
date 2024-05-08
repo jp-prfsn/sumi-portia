@@ -15,7 +15,7 @@ public class WaitThenLoadGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(ScoreHolder.Instance.PortiaMissing){
+        if(ScoreHolder.Instance.gameState == GameStates.PortiaMissing){
             GetComponent<Animator>().runtimeAnimatorController = aloneAnim;
         }
         StartCoroutine(WaitNLoad());
@@ -34,16 +34,17 @@ public class WaitThenLoadGame : MonoBehaviour
         if(ScoreHolder.Instance.roundCount == ScoreHolder.Instance.roundsPerLevel-1)
         {
             // if the player has completed the last round of the last level
-            if(ScoreHolder.Instance.currentLevel == ScoreHolder.Instance.levelUnlocked.Length-1)
+            if(ScoreHolder.Instance.currentLevel < ScoreHolder.Instance.levelUnlocked.Length-1)
             {
-                ScoreHolder.Instance.roundCount = 0;
-                SceneManager.LoadScene("LevelSelect");
-
-            }else{
-                ScoreHolder.Instance.roundCount = 0;
+                // Unlock next level
                 ScoreHolder.Instance.levelUnlocked[ScoreHolder.Instance.currentLevel+1] = 1;
-                SceneManager.LoadScene("LevelSelect");
             }
+            if(ScoreHolder.Instance.currentLevel == 8){
+                ScoreHolder.Instance.gameState = GameStates.LivingInFantasy;
+            }
+
+            SceneManager.LoadScene("LevelSelect");
+            
         }
         else
         {

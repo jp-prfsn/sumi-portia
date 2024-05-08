@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class TownGenerator : MonoBehaviour
 {
     public static TownGenerator Instance;
-    public int rows = 7; // Number of rows in the grid
-    public int cols = 5; // Number of columns in the grid
+    public int rows = 3; // Number of rows in the grid
+    public int cols = 3; // Number of columns in the grid
     public float cellSize = 1.0f; // Size of each cell
 
     public float spacing = 0.1f;
@@ -23,6 +24,10 @@ public class TownGenerator : MonoBehaviour
     public AudioSource aSource;
     bool moving = false;
 
+    public TextMeshProUGUI TownName;
+
+    public GameObject FantasyIsland;
+
     
 
     public AnimationCurve moveCurve;
@@ -35,9 +40,6 @@ public class TownGenerator : MonoBehaviour
     }
 
     public IEnumerator MoveWitches(Vector3 targetPos){
-
-        
-        
         float duration = 0.1f;
         float timeElapsed = 0;
         Vector3 startPos = WitchSelector.position;
@@ -48,47 +50,70 @@ public class TownGenerator : MonoBehaviour
             yield return null;
         } 
     }
+
+    void Awake(){
+        Instance = this;
+    }
  
 
     public void Start(){
 
-        if(ScoreHolder.Instance.PortiaMissing){
-            Portia.SetActive(false);
+        if(ScoreHolder.Instance.gameState == GameStates.LivingInFantasy){
+            // If we are living in fantasy, we need to disable the town and enable the fantasy island
+            FantasyIsland.SetActive(true);
+            FantasyIsland.GetComponent<TownTile>().Setup();
+            WitchSelector.position = FantasyIsland.transform.position;
+            TownName.text = "The Refuge of Memory";
         }
+        else{
 
-        Instance = this;
-        ScoreHolder.Instance.PlayMenuMusic();
+            FantasyIsland.SetActive(false);
+            
+            // If Portia has died, we need to disable her
+            if(ScoreHolder.Instance.gameState == GameStates.PortiaMissing){
+                Portia.SetActive(false);
+            }
+            else{
+                Portia.SetActive(true);
+                // Play the menu music
+                ScoreHolder.Instance.PlayMenuMusic();
+            }
 
-        // Generate the grid
-        gridCells = new GameObject[cols, rows];
-        for (int y = 0; y < rows; y++)
-        {
-            for (int x = 0; x < cols; x++)
-            {
-                Vector3 cellPosition = transform.position + new Vector3(
-                    (x * (cellSize + spacing) + cellSize / 2) - ((float)cols/2 * cellSize) - ((spacing * (cols-1)) / 2),  
-                    y * (cellSize + spacing) + cellSize / 2 - ((float)rows/2 * cellSize) - ((spacing * (rows-1)) / 2), 
-                    0);
-                GameObject newCell = Instantiate(TownTile, cellPosition, Quaternion.identity);
-                newCell.transform.parent = transform;
-                gridCells[x, y] = newCell;
+            
 
+            // Generate the grid
+            gridCells = new GameObject[cols, rows];
+            for (int y = 0; y < rows; y++){
+                for (int x = 0; x < cols; x++)
+                {
+                    Vector3 cellPosition = transform.position + new Vector3(
+                        (x * (cellSize + spacing) + cellSize / 2) - ((float)cols/2 * cellSize) - ((spacing * (cols-1)) / 2),  
+                        y * (cellSize + spacing) + cellSize / 2 - ((float)rows/2 * cellSize) - ((spacing * (rows-1)) / 2), 
+                        0);
+
+                    GameObject newCell = Instantiate(TownTile, cellPosition, Quaternion.identity);
+                    newCell.transform.parent = transform;
+                    gridCells[x, y] = newCell;
                     newCell.GetComponent<TownTile>().levelIndex = (y * cols) + x;
-                if(ScoreHolder.Instance.levelUnlocked[(y * cols) + x] == 1){
-                    // Draw Base
-                    newCell.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
-                    // Draw House
+
+                    if(ScoreHolder.Instance.levelUnlocked[(y * cols) + x] == 1 || ScoreHolder.Instance.gameState == GameStates.PortiaMissing){
+
+                        // Draw Base
+                        newCell.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
+
+                        // Draw House
+                        newCell.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
+
+                        WitchSelector.position = new Vector3(cellPosition.x, cellPosition.y, -1);
+                        newCell.GetComponent<TownTile>().isUnlocked = true;
+                    }else{
+                        // color is hexcode #666666
+                        newCell.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(0.4f,0.4f,0.4f,1);
+                        newCell.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(0.4f,0.4f,0.4f,1);
+                    }
                     
-                    newCell.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
-                    WitchSelector.position = new Vector3(cellPosition.x, cellPosition.y, -1);
-                    newCell.GetComponent<TownTile>().isUnlocked = true;
-                }else{
-                    // color is hexcode #666666
-                    newCell.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(0.4f,0.4f,0.4f,1);
-                    newCell.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(0.4f,0.4f,0.4f,1);
+                    newCell.GetComponent<TownTile>().Setup();
                 }
-                newCell.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = houses[Random.Range(0, houses.Count)];
-                newCell.GetComponent<TownTile>().Setup();
             }
         }
     }

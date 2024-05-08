@@ -5,6 +5,8 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
+
 public class GameManager : MonoBehaviour
 {
 
@@ -39,10 +41,10 @@ public class GameManager : MonoBehaviour
     public List<Block> flamingBlocks = new List<Block>();
     public List<Block> emberedBlocks = new List<Block>();
     public List<Block> destructionList = new List<Block>();
-
-    public int gamesPerLevel = 2;
     public int minPortalTurns = 2;
     private Transform camTransform;
+
+
 
     [Header("Rescue Counter")]
     public int rescueKillCounter = 0;
@@ -50,12 +52,16 @@ public class GameManager : MonoBehaviour
     public Transform PeepHolder;
     public GameObject peepscoreimage;
 
+
+    [Header("Tutorial")]
+    bool tutLevel = false;
     public GameObject canv;
-
-
+    public bool movingBlocksTutflag = false;
+    public bool portalTutflag = false;
+    public bool AngerTutFlag = false;
     public Transform TutorialFocus;
     public TextMeshProUGUI commandText;
-    public void TutorialFocusOn(Transform focusOnThis, string command){
+    public void TutorialFocusOn(string command, Transform focusOnThis){
         TutorialFocus.gameObject.SetActive(true);
         TutorialFocus.position = focusOnThis.position;
         commandText.text = command;
@@ -66,8 +72,9 @@ public class GameManager : MonoBehaviour
         canv.SetActive(true);
     }
 
-    public bool movingBlocksTutflag = false;
-    public bool portalTutflag = false;
+
+
+    
 
 
 
@@ -78,19 +85,23 @@ public class GameManager : MonoBehaviour
     public AnimationCurve ShakeCurve;
 
 
-
+    [Header("Audio")]
     public AudioSource aSource;
+    public AudioSource livesAudio;
     public AudioClip completeSound;
 
-    public AudioSource livesAudio;
+    [Space(10)]
 
-    
+    [Header("Portia Death Sequence")]
 
+    public SpriteRenderer Portia;
+    bool PortiaAflame = false;
+    bool portiaDiesThisTurn = false;
+    bool PortiaMissing => ScoreHolder.Instance.gameState == GameStates.PortiaMissing?true:false;
     public List<GameObject> PortiaRelatedThings = new List<GameObject>();
-
+    public Sprite PortiaDeathPose;
+    public GameObject PortiaFlames;
     
-
-    bool PortiaMissing = false;
 
 
     void Awake(){
@@ -101,18 +112,17 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        if(ScoreHolder.Instance.currentLevel == 14){
-            ScoreHolder.Instance.PortiaMissing = true;
+
+        SetGameStates();
+
+        CheckMissingAndDisablePortia();
+        
+        if(ScoreHolder.Instance.currentLevel == 8 && PortiaMissing){
+            // If Portia is gone, play multiple rounds in a daze.
+            ScoreHolder.Instance.roundsPerLevel = 5;
+        }else{
+            ScoreHolder.Instance.roundsPerLevel = 1;
         }
-
-        PortiaMissing = ScoreHolder.Instance.PortiaMissing;
-        if(PortiaMissing){
-            foreach(GameObject go in PortiaRelatedThings){
-                go.SetActive(false);
-            }
-        }
-
-
 
         portalFreq = Mathf.Max( minPortalTurns, ScoreHolder.Instance.currentLevel + 1 );
 
@@ -128,16 +138,194 @@ public class GameManager : MonoBehaviour
         fireText.text = f.ToString();
         StartCoroutine(StartGame());
     }
+
+    IEnumerator StartGame()
+    {
+        yield return new WaitUntil(()=> GridGenerator.gridder.ready);
+
+        if(ScoreHolder.Instance.roundCount == 0){
+            movingBlocksTutflag = false;
+            portalTutflag = false;
+            AngerTutFlag = false;
+        }else{
+            movingBlocksTutflag = true;
+            portalTutflag = true;
+            AngerTutFlag = true;
+        }
+
+        // Set Fire
+        var allBlocks = FindObjectsOfType<Block>();
+        allBlocks[Random.Range(0, allBlocks.Length)].SetFire();
+        foreach(Block b in emberedBlocks){
+            flamingBlocks.Add(b);
+        }
+        emberedBlocks.Clear();
+        StartCoroutine(TurnSequence());
+    }
+
+
+
+    public IEnumerator TurnSequence(){
+
+        if(ScoreHolder.Instance.currentLevel == 7 && !PortiaAflame){
+            if(TurnCount == 3){
+                PortiaCatchesFire();
+                StartCoroutine(ConstantCameraShake());
+                Annouce("Help! I'm on fire!");
+            }
+        }
+
+        if(tutLevel){
+            if(!portalTutflag && TurnWithinPortalLoop == portalFreq-1){
+                // Select a citizen
+                TutorialFocusOn("When the portal is ready, target an occupied block", GridGenerator.gridder.RandomBlockWithCitizen().transform);
+                yield return new WaitUntil(()=> Summoner.magic.blockSelected );
+                yield return new WaitForSeconds(0.5f);
+                // Click the portal
+                TutorialFocusOn("Click to send them safely into the portal", Portal.p.transform);
+                
+            }
+            if(!movingBlocksTutflag){
+                // click a random block
+                Block firstBlock = GridGenerator.gridder.RandomBlock();
+                TutorialFocusOn("Click to target a block", firstBlock.transform);
+                yield return new WaitUntil(()=> Summoner.magic.blockSelected );
+                yield return new WaitForSeconds(0.5f);
+                // click a random block
+                TutorialFocusOn("Click to summon it to a new location.", GridGenerator.gridder.RandomBlock(firstBlock).transform);
+            }
+        }
+
+        if(ScoreHolder.Instance.currentLevel == 8 && PortiaMissing && !AngerTutFlag){
+            // Select a citizen
+            Block firstBlock = GridGenerator.gridder.RandomBlock();
+            TutorialFocusOn("...", firstBlock.transform);
+            yield return new WaitUntil(()=> Summoner.magic.blockSelected );
+            yield return new WaitForSeconds(0.5f);
+            // Click the Citizen
+            TutorialFocusOn("You didn't deserve her", GridGenerator.gridder.RandomBlockWithCitizen().transform);
+
+        }
+
+
+        /*-- Player Turn Starts --*/
+        clickIndicator.enabled = true;
+        WaitingForPlaceBlock = true;
+
+        yield return new WaitUntil(()=> !WaitingForPlaceBlock );
+
+        if(tutLevel){
+            if(!movingBlocksTutflag){
+                yield return new WaitForSeconds(0.5f);
+                LoseTutorialFocus();
+                movingBlocksTutflag = true;
+            }
+            if(!portalTutflag && TurnWithinPortalLoop == portalFreq-1){
+                yield return new WaitForSeconds(0.5f);
+                LoseTutorialFocus();
+                portalTutflag = true;
+            }
+        }
+        if(ScoreHolder.Instance.currentLevel == 8 && PortiaMissing && !AngerTutFlag){
+            yield return new WaitForSeconds(0.5f);
+            LoseTutorialFocus();
+            AngerTutFlag = true;
+        }
+
+
+        clickIndicator.enabled = false;
+        yield return new WaitForSeconds(0.5f); 
+        /*-- Player Turn Over --*/
+
+        yield return null;
+
+        /* -- NON PLAYER ACTIONS -- */
+        // FIRE SPREAD
+        Debug.Log("Spreading Fire");
+        foreach(Block b in flamingBlocks){
+            b.FireSpread();
+            b.Damage("fire");
+            b.BreakCheck();
+        }
+        foreach(Block b in emberedBlocks){
+            Debug.Log("Embering Blocks");
+            flamingBlocks.Add(b);
+        }
+        emberedBlocks.Clear();
+
+        // DESTROY BLOCKS
+        int RoundsOfDestruction = 1;
+        while(destructionList.Count > 0){
+            yield return new WaitUntil(()=> NoBlocksMoving ); // When blocks have fallen into place //
+            BlockDestroyRound();
+            Debug.Log("Destruction Round " + RoundsOfDestruction);
+            yield return null;
+        }
+
+
+        
+        SkipTurn--;
+        TurnCount++;
+        TurnWithinPortalLoop++;
+        if(TurnWithinPortalLoop >= portalFreq){
+            TurnWithinPortalLoop = 0;
+        }
+
+        yield return new WaitUntil(()=> NoBlocksMoving );
+        
+        
+        if(!PortiaMissing){
+            Debug.Log("Starting Next Turn");
+            Portal.p.Turn();
+        }else{
+            Debug.Log("Portia Missing. Skipping Portal actions.");
+        }
+
+        StartCoroutine(TurnSequence());
+    }
+
+
+
+    void SetGameStates(){
+        if(ScoreHolder.Instance.currentLevel == 0){
+
+            tutLevel = true;
+
+        }else if(ScoreHolder.Instance.currentLevel == 8){
+
+            ScoreHolder.Instance.gameState = GameStates.PortiaMissing;
+
+        }else if(ScoreHolder.Instance.currentLevel == 9){
+
+            ScoreHolder.Instance.gameState = GameStates.LivingInFantasy;
+        }
+    }
+
+    void PortiaCatchesFire(){
+        
+        // Set Portia sprite to flaming
+        PortiaAflame = true;
+        PortiaFlames.SetActive(true);
+        Portia.sprite = PortiaDeathPose;
+
+    }
+
+    void CheckMissingAndDisablePortia(){
+
+        // if she is missing, disable her and related things
+        if(PortiaMissing){
+            foreach(GameObject go in PortiaRelatedThings){
+                go.SetActive(false);
+            }
+        }
+    }
     public void CameraBounce(){
         StartCoroutine(CamBounce());
     }
     private IEnumerator CamBounce(){
         float timeElapsed = 0;
-        
         Vector3 originalPosition = camTransform.position;
-
         Vector3 ShakePoint = originalPosition + new Vector3(0,shakeDistance,0);
-
         while (timeElapsed < duration)
         {
             float percent = Mathf.Clamp01( timeElapsed / duration);
@@ -146,8 +334,6 @@ public class GameManager : MonoBehaviour
             timeElapsed += Time.deltaTime;
             yield return null;
         }
-        
-
         camTransform.position = originalPosition;
     }
 
@@ -225,6 +411,11 @@ public class GameManager : MonoBehaviour
     public void CheckIfOver(){
         if(remainingCitizens == 0){
 
+            if(ScoreHolder.Instance.currentLevel == 8){
+                portiaDiesThisTurn = true;
+            }
+            
+
             int origRating = ScoreHolder.Instance.careerAvg;
 
             if(totalCitizens > 0){
@@ -252,10 +443,19 @@ public class GameManager : MonoBehaviour
                 ScoreHolder.Instance.ratingTitle = "Top notch!";
             }
 
-            ScoreHolder.Instance.gameCount++;
+ 
             aSource.PlayOneShot(completeSound, 1);
 
+
+            if(portiaDiesThisTurn){
+                ScoreHolder.Instance.gameState = GameStates.PortiaMissing;
+                foreach(GameObject go in PortiaRelatedThings){
+                    go.SetActive(false);
+                }
+            }
+
             Invoke("LoadSuccess",2);
+            
 
             
         }
@@ -265,115 +465,14 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Success");
     }
 
-    IEnumerator StartGame()
-    {
-        yield return new WaitUntil(()=> GridGenerator.gridder.ready);
-
-        if(ScoreHolder.Instance.gameCount == 0){
-            movingBlocksTutflag = false;
-            portalTutflag = false;
-        }else{
-            movingBlocksTutflag = true;
-            portalTutflag = true;
+    private IEnumerator ConstantCameraShake(){
+        while(true){
+            yield return new WaitForSeconds(0.1f);
+            CameraBounce();
         }
-
-        // Set Fire
-        var allBlocks = FindObjectsOfType<Block>();
-        allBlocks[Random.Range(0, allBlocks.Length)].SetFire();
-        foreach(Block b in emberedBlocks){
-            flamingBlocks.Add(b);
-        }
-        emberedBlocks.Clear();
-        StartCoroutine(TurnSequence());
     }
 
-     
-
-    public IEnumerator TurnSequence(){
-
-        if(!portalTutflag && TurnWithinPortalLoop == portalFreq-1){
-            // Select a citizen
-            TutorialFocusOn(GridGenerator.gridder.RandomBlockWithCitizen().transform, "When the portal is ready, target an occupied block");
-            yield return new WaitUntil(()=> Summoner.magic.blockSelected );
-            yield return new WaitForSeconds(0.5f);
-            // Click the portal
-            TutorialFocusOn(Portal.p.transform, "Click to send them safely into the portal");
-            
-        }
-        if(!movingBlocksTutflag){
-            // click a random block
-            Block firstBlock = GridGenerator.gridder.RandomBlock();
-            TutorialFocusOn(firstBlock.transform, "Click to target a block");
-            yield return new WaitUntil(()=> Summoner.magic.blockSelected );
-            yield return new WaitForSeconds(0.5f);
-            // click a random block
-            TutorialFocusOn(GridGenerator.gridder.RandomBlock(firstBlock).transform, "Click to summon it to a new location.");
-        }
-
-        /*-- Player Turn Starts --*/
-        clickIndicator.enabled = true;
-        WaitingForPlaceBlock = true;
-
-        yield return new WaitUntil(()=> !WaitingForPlaceBlock );
-
-
-        if(!movingBlocksTutflag){
-            yield return new WaitForSeconds(0.5f);
-            LoseTutorialFocus();
-            movingBlocksTutflag = true;
-        }
-        if(!portalTutflag && TurnWithinPortalLoop == portalFreq-1){
-            yield return new WaitForSeconds(0.5f);
-            LoseTutorialFocus();
-            portalTutflag = true;
-        }
-        clickIndicator.enabled = false;
-        yield return new WaitForSeconds(0.5f); 
-        /*-- Player Turn Over --*/
-
-        yield return null;
-
-        // Nature Turn
-        foreach(Block b in flamingBlocks){
-            // Spread Fire
-            b.FireSpread();
-            b.Damage("fire");
-            b.BreakCheck();
-            
-        }
-        foreach(Block b in emberedBlocks){
-            flamingBlocks.Add(b);
-        }
-
-        emberedBlocks.Clear();
-
-        int RoundsOfDestruction = 1;
-        while(destructionList.Count > 0){
-            yield return new WaitUntil(()=> NoBlocksMoving ); // When blocks have fallen into place //
-            BlockDestroyRound();
-            Debug.Log("Destruction Round " + RoundsOfDestruction);
-            yield return null;
-            //yield return new WaitForSeconds(1);
-        }
-        
-        SkipTurn--;
-        TurnCount++;
-        TurnWithinPortalLoop++;
-        if(TurnWithinPortalLoop >= portalFreq){
-            TurnWithinPortalLoop = 0;
-        }
-
-        yield return new WaitUntil(()=> NoBlocksMoving );
-
-        Portal.p.Turn();
-        
-        
-        
-
-        StartCoroutine(TurnSequence());
-    }
-
-
+    
     public IEnumerator moveTutPointer(){
         yield return null;
     }

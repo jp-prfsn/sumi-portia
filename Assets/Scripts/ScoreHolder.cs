@@ -2,21 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GameStates{
+    Regular,
+    PortiaMissing,
+    LivingInFantasy
+}
+
 public class ScoreHolder : MonoBehaviour
 {
     public static ScoreHolder Instance;
 
+    [Header("Game States")]
+
+    public GameStates gameState = GameStates.Regular;
+ 
+    [Space]
+    [Header("Player Stats")]
     public int ratingNumber;
     public string ratingLetter;
     public string ratingTitle;
     public int careerAvg;
-    public int gameCount = 0;
-    public AudioSource mainSong;
-    public int[] levelUnlocked = new int[15]{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+    [Space]
+    [Header("Level Stats")]
+    public int[] levelUnlocked = new int[15]{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     public int currentLevel = 0;
     public int roundCount = 0;
-    public int roundsPerLevel = 5;
+    public int roundsPerLevel = 1;
+
+
+    [Space]
+    [Header("Audio")]
+    public AudioSource mainSong;
+    private AudioSource aSource;
+    public AudioClip GameMusic;
+    public AudioClip MenuMusic;
+
+    [Space]
+    [Header("Cursor")]
     public Texture2D cursorTexture;
     public CursorMode cursorMode = CursorMode.Auto;
     public Vector2 hotSpot = Vector2.zero;
@@ -24,12 +47,8 @@ public class ScoreHolder : MonoBehaviour
 
 
 
-    private AudioSource aSource;
-    public AudioClip GameMusic;
-    public AudioClip MenuMusic;
 
-
-    public bool PortiaMissing = false;
+    
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.

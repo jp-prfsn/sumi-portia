@@ -14,7 +14,9 @@ public class TownTile : MonoBehaviour
     public void Setup()
     {
 
-        if(ScoreHolder.Instance.levelUnlocked[levelIndex] == 1){
+        bool isFantasyIsland = levelIndex == TownGenerator.Instance.cols * TownGenerator.Instance.rows;
+
+        if(ScoreHolder.Instance.levelUnlocked[levelIndex] == 1 || ScoreHolder.Instance.gameState == GameStates.PortiaMissing || (ScoreHolder.Instance.gameState == GameStates.LivingInFantasy && isFantasyIsland)){
             isUnlocked = true;
             ScoreHolder.Instance.currentLevel = levelIndex;
             lockedSprite.SetActive(false);
@@ -23,7 +25,17 @@ public class TownTile : MonoBehaviour
             isUnlocked = false;
         }
 
-        levelText.text = (levelIndex + 1).ToString();
+        transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = TownGenerator.Instance.houses[Random.Range(0, TownGenerator.Instance.houses.Count)];
+
+        if(isFantasyIsland){
+            // heart character
+            levelText.text = "♥";
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
+            transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
+        }else{
+            levelText.text = (levelIndex + 1).ToString();
+        }
+
     }
 
  
@@ -52,6 +64,8 @@ public class TownTile : MonoBehaviour
     }
 
     IEnumerator EnterLevel(){
+        // Reset round count
+        ScoreHolder.Instance.roundCount = 0;
         ScoreHolder.Instance.currentLevel = levelIndex;
         transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         yield return new WaitForSeconds(0.1f);
