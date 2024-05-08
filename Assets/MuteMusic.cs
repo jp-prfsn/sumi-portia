@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class MuteMusic : MonoBehaviour
 {
-
+    public static MuteMusic Instance;
     public Sprite mutedImg;
     public Sprite unmutedImg;
     public SpriteRenderer img; 
 
     void Start(){
+        Instance = this;
         if(ScoreHolder.Instance.mainSong.enabled){
             img.sprite = unmutedImg;
         }else{
@@ -28,5 +29,10 @@ public class MuteMusic : MonoBehaviour
         }else{
             img.sprite = mutedImg;
         }
+    }
+
+    public void Mute(){
+        ScoreHolder.Instance.mainSong.enabled = false;
+        img.sprite = mutedImg;
     }
 }

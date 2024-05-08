@@ -52,9 +52,9 @@ public class TownTile : MonoBehaviour
     }
 
     void OnMouseOver(){
-        if(isUnlocked){
-            //TownGenerator.Instance.WitchSelector.position = new Vector3(transform.position.x, transform.position.y, -1);
-            StartCoroutine(TownGenerator.Instance.MoveWitches(transform.position));
+        if(isUnlocked && levelIndex == ScoreHolder.Instance.currentLevel){
+            TownGenerator.Instance.WitchSelector.position = new Vector3(transform.position.x, transform.position.y, -1);
+            //StartCoroutine(TownGenerator.Instance.MoveWitches(transform.position));
             hover.SetActive(true);
         }
     }

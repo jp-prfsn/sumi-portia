@@ -439,6 +439,10 @@ public class Block : MonoBehaviour
 
                 //Destroy(this.gameObject);
                 Instantiate(breakage, this.transform.position, Quaternion.identity);
+                if(this.isInterior){
+                    GameManager.gm.NotifyDeath(this.transform.position);
+                }
+                
                 this.gameObject.SetActive(false);
             }
         }

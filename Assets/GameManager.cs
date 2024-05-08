@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI fireText;
     public TextMeshProUGUI turnText;
 
+    public GameObject deathIcon;
+    public void NotifyDeath(Vector3 pos){
+        GameObject di = Instantiate(deathIcon);
+        di.transform.position = pos;
+    }
+
 
 
     /* Count Of How Many Blocks are in transition state */
@@ -101,6 +107,9 @@ public class GameManager : MonoBehaviour
     public List<GameObject> PortiaRelatedThings = new List<GameObject>();
     public Sprite PortiaDeathPose;
     public GameObject PortiaFlames;
+
+
+    public bool ShakeTheCamera = false;
     
 
 
@@ -307,6 +316,7 @@ public class GameManager : MonoBehaviour
         PortiaAflame = true;
         PortiaFlames.SetActive(true);
         Portia.sprite = PortiaDeathPose;
+        MuteMusic.Instance.Mute();
 
     }
 
@@ -314,6 +324,7 @@ public class GameManager : MonoBehaviour
 
         // if she is missing, disable her and related things
         if(PortiaMissing){
+            
             foreach(GameObject go in PortiaRelatedThings){
                 go.SetActive(false);
             }
@@ -411,7 +422,7 @@ public class GameManager : MonoBehaviour
     public void CheckIfOver(){
         if(remainingCitizens == 0){
 
-            if(ScoreHolder.Instance.currentLevel == 8){
+            if(ScoreHolder.Instance.currentLevel == 7){
                 portiaDiesThisTurn = true;
             }
             
@@ -448,7 +459,9 @@ public class GameManager : MonoBehaviour
 
 
             if(portiaDiesThisTurn){
+                ShakeTheCamera = false;
                 ScoreHolder.Instance.gameState = GameStates.PortiaMissing;
+                NotifyDeath(Portia.transform.position);
                 foreach(GameObject go in PortiaRelatedThings){
                     go.SetActive(false);
                 }
@@ -466,8 +479,11 @@ public class GameManager : MonoBehaviour
     }
 
     private IEnumerator ConstantCameraShake(){
-        while(true){
+        ShakeTheCamera = true;
+        Portia.gameObject.GetComponent<AudioSource>().Play();
+        while(ShakeTheCamera){
             yield return new WaitForSeconds(0.1f);
+            
             CameraBounce();
         }
     }

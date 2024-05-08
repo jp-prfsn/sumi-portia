@@ -1301,6 +1301,8 @@ MonoBehaviour:
   annouceText: {fileID: 1302413753}
   fireText: {fileID: 1092521430}
   turnText: {fileID: 1099535133}
+  deathIcon: {fileID: 2905649845425594037, guid: 6bb258879d95d89408d9ead8e8b53614,
+    type: 3}
   BlockFallCount: 0
   SkipTurn: 0
   clickIndicator: {fileID: 1734789685}
@@ -1385,6 +1387,7 @@ MonoBehaviour:
   - {fileID: 1302413751}
   PortiaDeathPose: {fileID: 21300000, guid: 7c4797a7c0b97e749beeb948be513680, type: 3}
   PortiaFlames: {fileID: 1876018500}
+  ShakeTheCamera: 0
 --- !u!4 &618319473
 Transform:
   m_ObjectHideFlags: 0
@@ -2131,6 +2134,7 @@ GameObject:
   - component: {fileID: 826281856}
   - component: {fileID: 826281857}
   - component: {fileID: 826281859}
+  - component: {fileID: 826281858}
   m_Layer: 0
   m_Name: Portia
   m_TagString: Untagged
@@ -2204,6 +2208,102 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!82 &826281858
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826281855}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: b087ed54e3ca28d41a49ba32b0c9d52c, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &826281859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3991,8 +4091,8 @@ MonoBehaviour:
   roundCount: 0
   roundsPerLevel: 1
   mainSong: {fileID: 1600552625}
-  GameMusic: {fileID: 0}
-  MenuMusic: {fileID: 0}
+  GameMusic: {fileID: 8300000, guid: ef235d226db594c408f1f435c6d1fb6e, type: 3}
+  MenuMusic: {fileID: 8300000, guid: 34faaae1f3416064e8be4974716e9c02, type: 3}
   cursorTexture: {fileID: 2800000, guid: 8603021882fb0994796f29beb123f39b, type: 3}
   cursorMode: 0
   hotSpot: {x: 0, y: 0}
