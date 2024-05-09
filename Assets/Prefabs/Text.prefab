@@ -233,7 +233,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 10
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &8060456383323339423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,7 +253,7 @@ MonoBehaviour:
   dashBox: {fileID: 21300000, guid: 31e110693872d124fadcf502f926bf1c, type: 3}
   speaker: 0
   audioS: {fileID: 8060456383323339420}
-  clicker: {fileID: 8300000, guid: fc86e004b9438a647a17748a2d4fc229, type: 3}
+  clicker: {fileID: 8300000, guid: b1d46108dc3e9fe4b99470b3e9b11df2, type: 3}
   textSize: {x: 0, y: 0}
   Anima: {fileID: 0}
   loopAnimation: 0

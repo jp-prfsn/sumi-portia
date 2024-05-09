@@ -16,7 +16,7 @@ public class TownTile : MonoBehaviour
 
         bool isFantasyIsland = levelIndex == TownGenerator.Instance.cols * TownGenerator.Instance.rows;
 
-        if(ScoreHolder.Instance.levelUnlocked[levelIndex] == 1 || ScoreHolder.Instance.gameState == GameStates.PortiaMissing || (ScoreHolder.Instance.gameState == GameStates.LivingInFantasy && isFantasyIsland)){
+        if(this.levelIndex <= ScoreHolder.Instance.levelsUnlocked || ScoreHolder.Instance.gameState == GameStates.PortiaMissing || (ScoreHolder.Instance.gameState == GameStates.LivingInFantasy && isFantasyIsland)){
             isUnlocked = true;
             ScoreHolder.Instance.currentLevel = levelIndex;
             lockedSprite.SetActive(false);
@@ -41,14 +41,17 @@ public class TownTile : MonoBehaviour
  
     private void OnMouseDown()
     {
-        if(isUnlocked){
+        if(!FoundObject.Instance.ActiveStatus){
+            if(isUnlocked){
             
-            StartCoroutine(EnterLevel());
-            TownGenerator.Instance.PlaySuccess();
-        }else{
-            StartCoroutine(Shake());
-            TownGenerator.Instance.PlayFailure();
+                StartCoroutine(EnterLevel());
+                TownGenerator.Instance.PlaySuccess();
+            }else{
+                StartCoroutine(Shake());
+                TownGenerator.Instance.PlayFailure();
+            }
         }
+        
     }
 
     void OnMouseOver(){

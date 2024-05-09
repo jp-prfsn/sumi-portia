@@ -25,7 +25,7 @@ public class ScoreHolder : MonoBehaviour
 
     [Space]
     [Header("Level Stats")]
-    public int[] levelUnlocked = new int[15]{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    public int levelsUnlocked = 0;
     public int currentLevel = 0;
     public int roundCount = 0;
     public int roundsPerLevel = 1;
@@ -43,6 +43,22 @@ public class ScoreHolder : MonoBehaviour
     public Texture2D cursorTexture;
     public CursorMode cursorMode = CursorMode.Auto;
     public Vector2 hotSpot = Vector2.zero;
+
+
+    [Space]
+    [Header("Found Objects")]
+    public int foundObjects = 0;
+    public List<Sprite> foundObjectSprites = new List<Sprite>();
+    public List<string> foundObjectNames = new List<string>();
+    public List<string> foundObjectsDescriptions = new List<string>();
+    public List<Tree> foundTrees = new List<Tree>();
+
+    public void populateTree(){
+        if(foundObjects < foundObjectSprites.Count){
+            foundTrees[Random.Range(0,foundTrees.Count)].BecomeClickable();
+            foundTrees.Clear();
+        }
+    }
 
 
 

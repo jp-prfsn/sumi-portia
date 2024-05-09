@@ -34,10 +34,11 @@ public class WaitThenLoadGame : MonoBehaviour
         if(ScoreHolder.Instance.roundCount == ScoreHolder.Instance.roundsPerLevel-1)
         {
             // if the player has completed the last round of the last level
-            if(ScoreHolder.Instance.currentLevel < ScoreHolder.Instance.levelUnlocked.Length-1)
+            if(ScoreHolder.Instance.currentLevel == ScoreHolder.Instance.levelsUnlocked)
             {
                 // Unlock next level
-                ScoreHolder.Instance.levelUnlocked[ScoreHolder.Instance.currentLevel+1] = 1;
+                ScoreHolder.Instance.levelsUnlocked++;
+                ScoreHolder.Instance.levelsUnlocked = Mathf.Clamp(ScoreHolder.Instance.levelsUnlocked, 0, 9);
             }
             if(ScoreHolder.Instance.currentLevel == 8){
                 ScoreHolder.Instance.gameState = GameStates.LivingInFantasy;

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 public enum Speaker { Sumi , Portia }
 
@@ -42,7 +41,7 @@ public class WriteTextNode : MonoBehaviour
         newChildNode.transform.SetSiblingIndex(this.transform.GetSiblingIndex() + 1);
 
         // select the new node
-        Selection.activeGameObject = newChildNode;
+        //Selection.activeGameObject = newChildNode;
 
         // distribute all linked nodes evenly below this node
         float distanceBetweenOutpoints = 1;
@@ -94,7 +93,7 @@ public class WriteTextNode : MonoBehaviour
 
 
             #if UNITY_EDITOR
-                Handles.Label(transform.position, text, style);
+                //Handles.Label(transform.position, text, style);
             #endif
             
         }

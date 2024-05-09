@@ -96,7 +96,9 @@ public class TownGenerator : MonoBehaviour
                     gridCells[x, y] = newCell;
                     newCell.GetComponent<TownTile>().levelIndex = (y * cols) + x;
 
-                    if(ScoreHolder.Instance.levelUnlocked[(y * cols) + x] == 1 || ScoreHolder.Instance.gameState == GameStates.PortiaMissing){
+                    
+
+                    if(newCell.GetComponent<TownTile>().levelIndex <= ScoreHolder.Instance.levelsUnlocked || ScoreHolder.Instance.gameState == GameStates.PortiaMissing){
 
                         // Draw Base
                         newCell.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
@@ -106,6 +108,7 @@ public class TownGenerator : MonoBehaviour
 
                         WitchSelector.position = new Vector3(cellPosition.x, cellPosition.y, -1);
                         newCell.GetComponent<TownTile>().isUnlocked = true;
+
                     }else{
                         // color is hexcode #666666
                         newCell.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(0.4f,0.4f,0.4f,1);
@@ -116,6 +119,9 @@ public class TownGenerator : MonoBehaviour
                 }
             }
         }
+
+
+        ScoreHolder.Instance.populateTree();
     }
 
     private void OnDrawGizmos()

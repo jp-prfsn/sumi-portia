@@ -430,6 +430,7 @@ public class Block : MonoBehaviour
                     }else{
                         GameManager.gm.livesKilled ++;
                         GameManager.gm.UpdatePeeps(false);
+                        GameManager.gm.NotifyDeath(this.transform.position);
                         // Play blood particles
                     }
                     
@@ -439,10 +440,6 @@ public class Block : MonoBehaviour
 
                 //Destroy(this.gameObject);
                 Instantiate(breakage, this.transform.position, Quaternion.identity);
-                if(this.isInterior){
-                    GameManager.gm.NotifyDeath(this.transform.position);
-                }
-                
                 this.gameObject.SetActive(false);
             }
         }

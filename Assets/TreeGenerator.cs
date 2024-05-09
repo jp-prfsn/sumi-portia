@@ -21,7 +21,9 @@ public class TreeGenerator : MonoBehaviour
             for (float y = -range.y; y < range.y; y++)
             {
                 Vector3 randomOffset = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0);
-                Instantiate(tree, transform.position + new Vector3(x, y, 0) + randomOffset, Quaternion.identity, transform);
+                GameObject newTree = Instantiate(tree, transform.position + new Vector3(x, y, 0) + randomOffset, Quaternion.identity, transform);
+                newTree.name = "Tree";
+                ScoreHolder.Instance.foundTrees.Add(newTree.GetComponent<Tree>());
             }
         }
     }
