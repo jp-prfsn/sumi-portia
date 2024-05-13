@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1149,7 +1149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4de38e4314482fb42a958437bd2538d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameState: 0
+  gameState: 1
   ratingNumber: 0
   ratingLetter: 
   ratingTitle: 
@@ -1182,7 +1182,7 @@ MonoBehaviour:
   - Smoke em if you got em, I guess...
   - How bloody irresponsible.
   - '"How to summon Littleberry''s sexiest witches." What?'
-  - '"Saucy Littleberry Witch Reveals All. Portia as seen from below." What the hell?'
+  - '"Saucy Littleberry Witch Reveals All. Portia as seen from below." These people...'
   foundTrees: []
 --- !u!4 &455343662
 Transform:
