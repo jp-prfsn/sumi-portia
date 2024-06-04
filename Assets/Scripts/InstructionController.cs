@@ -33,7 +33,7 @@ public class InstructionController : MonoBehaviour
         if(page == cnv.childCount){
 
 
-
+            Destroy(NighttimeAudio.Instance.gameObject);
             SceneManager.LoadScene("LevelSelect");
             
         }else{

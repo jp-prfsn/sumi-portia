@@ -57,7 +57,7 @@ public class PatchwareLogo : MonoBehaviour
 
         yield return new WaitForSeconds(1);
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Instructions");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Title");
     }
 
     void OnDrawGizmos(){

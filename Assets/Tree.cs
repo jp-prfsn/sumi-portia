@@ -14,8 +14,14 @@ public class Tree : MonoBehaviour
         anim = GetComponent<Animator>();
         Invoke("PlayRandomAnimation", Random.Range(5, 10));
 
+        if(Random.value <= 0.02f){
+            // get child 0
+            Invoke("SetCameraSpriteActive", Random.Range(5, 10));
+        }
+    }
 
-        
+    void SetCameraSpriteActive(){
+        transform.GetChild(0).gameObject.SetActive(true);
     }
 
     void PlayRandomAnimation(){
