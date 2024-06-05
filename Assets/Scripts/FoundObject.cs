@@ -20,12 +20,10 @@ public class FoundObject : MonoBehaviour
     public Transform indicator;
     public Sprite filledBox;
 
+
     void Awake(){
         Instance = this;
-
-        
         FillBoxes();
-        
     }
 
     public void FillBoxes(){
@@ -35,6 +33,8 @@ public class FoundObject : MonoBehaviour
             for(int i=0; i<ScoreHolder.Instance.foundObjectSprites.Count; i++){
                 if(ScoreHolder.Instance.foundObjects > i){
                     indicator.GetChild(i).GetChild(0).GetComponent<Image>().sprite = filledBox;
+                    indicator.GetChild(i).GetChild(0).GetChild(0).gameObject.SetActive(true);
+
                 }
             }
         }
