@@ -28,6 +28,8 @@ public class TownGenerator : MonoBehaviour
 
     public GameObject FantasyIsland;
 
+    public GameObject Desktop;
+
     
 
     public AnimationCurve moveCurve;
@@ -126,21 +128,30 @@ public class TownGenerator : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-    // Draw grid with gizmos
-    Gizmos.color = Color.cyan;
-    for (int y = 0; y < rows; y++)
-    {
-        for (int x = 0; x < cols; x++)
+        // Draw grid with gizmos
+        Gizmos.color = Color.cyan;
+        for (int y = 0; y < rows; y++)
         {
-            Vector3 cellPosition = transform.position + new Vector3(
-                (x * (cellSize + spacing) + cellSize / 2) - ((float)cols/2 * cellSize) - ((spacing * (cols-1)) / 2),  
-                y * (cellSize + spacing) + cellSize / 2 - ((float)rows/2 * cellSize) - ((spacing * (rows-1)) / 2), 
-                0);
+            for (int x = 0; x < cols; x++)
+            {
+                Vector3 cellPosition = transform.position + new Vector3(
+                    (x * (cellSize + spacing) + cellSize / 2) - ((float)cols/2 * cellSize) - ((spacing * (cols-1)) / 2),  
+                    y * (cellSize + spacing) + cellSize / 2 - ((float)rows/2 * cellSize) - ((spacing * (rows-1)) / 2), 
+                    0);
 
 
 
-            Gizmos.DrawWireCube(cellPosition, new Vector3(cellSize, cellSize, 0.1f));
+                Gizmos.DrawWireCube(cellPosition, new Vector3(cellSize, cellSize, 0.1f));
+            }
         }
     }
-}
+
+    private void Update()
+    {
+        // if Shift + 8 is pressed, open the desktop
+        if(Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Alpha8)){
+            Debug.Log("Pressed Shift + 8");
+            Desktop.SetActive(true);
+        }
+    }
 }

@@ -41,7 +41,7 @@ public class TownTile : MonoBehaviour
  
     private void OnMouseDown()
     {
-        if(!FoundObject.Instance.ActiveStatus){
+        if(!FoundObject.Instance.ActiveStatus && !DesktopManager.instance.gameObject.activeInHierarchy){
             if(isUnlocked){
             
                 StartCoroutine(EnterLevel());
@@ -55,7 +55,7 @@ public class TownTile : MonoBehaviour
     }
 
     void OnMouseOver(){
-        if(isUnlocked && levelIndex == ScoreHolder.Instance.currentLevel){
+        if(isUnlocked && levelIndex == ScoreHolder.Instance.currentLevel && !DesktopManager.instance.gameObject.activeInHierarchy){
             TownGenerator.Instance.WitchSelector.position = new Vector3(transform.position.x, transform.position.y, -1);
             //StartCoroutine(TownGenerator.Instance.MoveWitches(transform.position));
             hover.SetActive(true);

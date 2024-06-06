@@ -14,10 +14,17 @@ public class Tree : MonoBehaviour
         anim = GetComponent<Animator>();
         Invoke("PlayRandomAnimation", Random.Range(5, 10));
 
+        if(transform.position.x < 0){
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+
         if(Random.value * (ScoreHolder.Instance.levelsUnlocked+1) <= 0.02f){
             // get child 0
             Invoke("SetCameraSpriteActive", Random.Range(5, 10));
+            
         }
+
+
     }
 
     void SetCameraSpriteActive(){
@@ -58,7 +65,7 @@ public class Tree : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if(Clickable){
+        if(Clickable && !DesktopManager.instance.gameObject.activeInHierarchy){
             FoundObject.Instance.Activate();
             Clickable = false;
 
@@ -71,21 +78,21 @@ public class Tree : MonoBehaviour
     }
 
     void OnMouseEnter(){
-        if(Clickable){
+        if(Clickable && !DesktopManager.instance.gameObject.activeInHierarchy){
             StopAllCoroutines();
             StartCoroutine(Shake());
             mouseOver = true;
         }
     }
     void OnMouseExit(){
-        if(Clickable){
+        if(Clickable && !DesktopManager.instance.gameObject.activeInHierarchy){
             mouseOver = false;
         }
     }
 
     private void OnDrawGizmos()
     {
-        if(Clickable){
+        if(Clickable && !DesktopManager.instance.gameObject.activeInHierarchy){
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(transform.position, new Vector3(1, 1, 0.1f));
         }
